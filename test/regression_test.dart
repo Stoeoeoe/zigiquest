@@ -59,7 +59,7 @@ void main() {
       );
       await tester.pump();
       expect(find.text('Cleanup-Runde starten'), findsOneWidget);
-      await tester.tap(find.text('Ohne Tracking').last);
+      await tester.tap(find.text('Runde ohne Standort starten'));
       await tester.pumpAndSettle();
       expect(find.text('CLEANUP LÄUFT'), findsOneWidget);
       expect(find.text('Ohne Tracking'), findsWidgets);

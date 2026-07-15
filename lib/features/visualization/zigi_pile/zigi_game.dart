@@ -27,7 +27,7 @@ class ZigiGame extends Forge2DGame {
   late final List<Sprite> _sprites;
   late final Sprite _smokeSprite;
   @override
-  Color backgroundColor() => const Color(0);
+  Color backgroundColor() => const Color(0x00000000);
   @override
   Future<void> onLoad() async {
     await super.onLoad();

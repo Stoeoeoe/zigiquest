@@ -55,11 +55,21 @@ class TodayScreen extends ConsumerWidget {
                   icon: const Icon(Icons.cleaning_services_rounded),
                   label: Text(
                     activeSession == null
-                        ? 'CLEANUP STARTEN'
+                        ? 'CLEANUP-RUNDE STARTEN'
                         : 'CLEANUP FORTSETZEN',
                     style: const TextStyle(letterSpacing: 1.1),
                   ),
                 ),
+                if (activeSession == null) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'Für bewusste Runden mit Zeit, optionalem Ort und Foto.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 12),
                 Semantics(
                   liveRegion: true,
@@ -82,6 +92,21 @@ class TodayScreen extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
+                        Text(
+                          'SCHNELL ERFASSEN',
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(
+                                letterSpacing: 1.2,
+                                fontWeight: FontWeight.w900,
+                                color: colors.onSurfaceVariant,
+                              ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Tippe das Glas für einzelne Funde.',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: colors.onSurfaceVariant),
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -137,7 +162,7 @@ class TodayScreen extends ConsumerWidget {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                      'Glas gefuellt! Ein neues leeres Glas ist bereit.',
+                                      'Glas gefüllt! Ein leeres Glas ist bereit.',
                                     ),
                                   ),
                                 );
@@ -152,11 +177,11 @@ class TodayScreen extends ConsumerWidget {
                           const SizedBox(height: 8),
                           Chip(
                             avatar: const Icon(
-                              Icons.wine_bar_rounded,
+                              Icons.celebration,
                               size: 18,
                             ),
                             label: Text(
-                              '$completedJars ${completedJars == 1 ? 'Glas' : 'Glaeser'} gefuellt',
+                              '$completedJars ${completedJars == 1 ? 'Glas' : 'Gläser'} gefüllt',
                             ),
                           ),
                         ],

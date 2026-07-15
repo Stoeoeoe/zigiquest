@@ -10,30 +10,26 @@ extension on _StoredZigi {
     'angle': angle,
     'sprite_index': spriteIndex,
   };
-  static _StoredZigi? fromJson(Object? raw) {
-    if (raw is! Map<String, dynamic>) return null;
-    final (x, y, a, s) = (
-      raw['x'],
-      raw['y'],
-      raw['angle'],
-      raw['sprite_index'],
-    );
-    if (x is! num || y is! num || a is! num || s is! num) return null;
-    final zigi = (
-      x: x.toDouble(),
-      y: y.toDouble(),
-      angle: a.toDouble(),
-      spriteIndex: s.toInt(),
-    );
-    return (!zigi.x.isFinite ||
-            !zigi.y.isFinite ||
-            !zigi.angle.isFinite ||
-            zigi.x.abs() > 5.3 ||
-            zigi.y.abs() > 6.4 ||
-            zigi.spriteIndex < 0)
-        ? null
-        : zigi;
-  }
+}
+
+_StoredZigi? _storedZigiFromJson(Object? raw) {
+  if (raw is! Map<String, dynamic>) return null;
+  final (x, y, a, s) = (raw['x'], raw['y'], raw['angle'], raw['sprite_index']);
+  if (x is! num || y is! num || a is! num || s is! num) return null;
+  final zigi = (
+    x: x.toDouble(),
+    y: y.toDouble(),
+    angle: a.toDouble(),
+    spriteIndex: s.toInt(),
+  );
+  return (!zigi.x.isFinite ||
+          !zigi.y.isFinite ||
+          !zigi.angle.isFinite ||
+          zigi.x.abs() > 5.3 ||
+          zigi.y.abs() > 6.4 ||
+          zigi.spriteIndex < 0)
+      ? null
+      : zigi;
 }
 
 class _PileStateStore {
@@ -65,7 +61,7 @@ class _PileStateStore {
         return null;
       final raw = json['zigis'];
       if (raw is! List || raw.length != activeCount) return null;
-      final list = [for (final r in raw) fromJson(r)];
+      final list = [for (final r in raw) _storedZigiFromJson(r)];
       return list.any((e) => e == null)
           ? null
           : list.whereType<_StoredZigi>().toList();

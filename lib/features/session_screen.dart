@@ -21,6 +21,7 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
   ActiveCleanupSession? _active;
   bool _ratingEligible = false;
   bool _recovering = false;
+  bool _isPickingPhoto = false;
 
   @override
   void initState() {
@@ -39,7 +40,9 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _restoreActiveSession();
+    if (state == AppLifecycleState.resumed && !_isPickingPhoto) {
+      _restoreActiveSession();
+    }
   }
 
   Future<void> _restoreActiveSession() async {
@@ -131,13 +134,21 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
   }
 
   void _changeCount(int delta) {
-    final next = (_count + delta).clamp(0, 100);
+    final candidate = _count + delta;
+    final next = candidate < 0 ? 0 : candidate;
     setState(() => _count = next);
     final active = _active;
     if (active != null) {
       _active = active.copyWith(count: next);
       unawaited(ref.read(activeSessionStoreProvider).save(_active!));
       ref.invalidate(activeSessionProvider);
+    }
+    if (delta > 0 && next > 0 && next % _zigisPerJar == 0 && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Glas gefüllt! Ein neues leeres Glas ist bereit.'),
+        ),
+      );
     }
   }
 
@@ -199,9 +210,15 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
   }
 
   Future<void> _addCompletionPhoto() async {
-    final photo = await _askForCompletionPhoto();
-    if (photo != null && mounted) {
-      setState(() => _after = photo);
+    if (_isPickingPhoto) return;
+    setState(() => _isPickingPhoto = true);
+    try {
+      final photo = await _askForCompletionPhoto();
+      if (photo != null && mounted) {
+        setState(() => _after = photo);
+      }
+    } finally {
+      if (mounted) setState(() => _isPickingPhoto = false);
     }
   }
 
@@ -321,7 +338,7 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
       _SessionStage.finishing => _FinishSession(
         count: _count,
         elapsed: _elapsed,
-        hasPhoto: _after != null,
+        photo: _after,
         onChange: _changeCount,
         onAddPhoto: _addCompletionPhoto,
         onSave: _save,
@@ -367,7 +384,7 @@ class _TrackingChoice extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => onChoose('none'),
                   icon: const Icon(Icons.location_off_rounded),
-                  label: const Text('Ohne Tracking'),
+                  label: const Text('Runde ohne Standort starten'),
                 ),
                 const SizedBox(height: 10),
                 OutlinedButton.icon(
@@ -421,6 +438,8 @@ class _ActiveSession extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final hint = DiscoverCard.forDay(DateTime.now());
+    final activeJarCount = count % _zigisPerJar;
+    final completedJars = count ~/ _zigisPerJar;
     return Scaffold(
       body: Stack(
         children: [
@@ -513,8 +532,9 @@ class _ActiveSession extends StatelessWidget {
                         child: AspectRatio(
                           aspectRatio: 1,
                           child: ZigiPileView(
-                            count: count,
-                            countLabel: '$count IN DIESER RUNDE',
+                            count: activeJarCount,
+                            countLabel:
+                                '$activeJarCount / $_zigisPerJar IM AKTUELLEN GLAS',
                             reducedMotion: reducedMotion,
                             containerStyle: containerStyle,
                             seed: seed,
@@ -527,6 +547,15 @@ class _ActiveSession extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (completedJars > 0) ...[
+                    const SizedBox(height: 6),
+                    Chip(
+                      avatar: const Icon(Icons.wine_bar_rounded, size: 18),
+                      label: Text(
+                        '$completedJars ${completedJars == 1 ? 'Glas' : 'Gläser'} gefüllt',
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 10),
                   FilledButton.icon(
                     onPressed: onFinish,
@@ -572,7 +601,7 @@ class _FinishSession extends StatelessWidget {
   const _FinishSession({
     required this.count,
     required this.elapsed,
-    required this.hasPhoto,
+    required this.photo,
     required this.onChange,
     required this.onAddPhoto,
     required this.onSave,
@@ -580,10 +609,12 @@ class _FinishSession extends StatelessWidget {
 
   final int count;
   final Duration elapsed;
-  final bool hasPhoto;
+  final SessionPhotoDraft? photo;
   final ValueChanged<int> onChange;
   final Future<void> Function() onAddPhoto;
   final VoidCallback onSave;
+
+  bool get hasPhoto => photo != null;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -652,6 +683,22 @@ class _FinishSession extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall,
             ),
+            if (photo != null) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.file(
+                  photo!.processed.file,
+                  height: 148,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => const SizedBox(
+                    height: 96,
+                    child: Center(child: Text('Vorschau nicht verfügbar.')),
+                  ),
+                ),
+              ),
+            ],
             const Spacer(),
             FilledButton.icon(
               onPressed: onSave,

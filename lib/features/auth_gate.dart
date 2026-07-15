@@ -34,6 +34,7 @@ class WelcomeScreen extends ConsumerStatefulWidget {
 
 class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   bool _working = false;
+  bool _showAccountChoice = false;
 
   Future<void> _signIn() async {
     setState(() => _working = true);
@@ -63,6 +64,11 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_showAccountChoice) {
+      return _HowItWorksScreen(
+        onContinue: () => setState(() => _showAccountChoice = true),
+      );
+    }
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
       body: DecoratedBox(
@@ -117,17 +123,36 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
+                    Card(
+                      child: const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Wofür ist ein Konto da?',
+                              style: TextStyle(fontWeight: FontWeight.w800),
+                            ),
+                            SizedBox(height: 6),
+                            Text(
+                              'Für private Sicherung und Synchronisierung zwischen Geräten. Session-Fotos können ebenfalls privat gesichert werden. Zählen, Cleanup-Runden und Verlauf funktionieren auch ohne Konto.',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     FilledButton.icon(
                       onPressed: _working ? null : _signIn,
                       icon: const Icon(Icons.login_rounded),
-                      label: const Text('Mit Google fortfahren'),
+                      label: const Text('Mit Google anmelden (optional)'),
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton.icon(
                       onPressed: _working ? null : _continueAsGuest,
                       icon: const Icon(Icons.person_outline_rounded),
-                      label: const Text('Ohne Konto starten'),
+                      label: const Text('Ohne Konto fortfahren'),
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -146,6 +171,126 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
       ),
     );
   }
+}
+
+class _HowItWorksScreen extends StatelessWidget {
+  const _HowItWorksScreen({required this.onContinue});
+
+  final VoidCallback onContinue;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Scaffold(
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [colors.primaryContainer, colors.surface],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(28),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 440),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Icon(
+                      Icons.cleaning_services_rounded,
+                      color: colors.primary,
+                      size: 62,
+                    ),
+                    const SizedBox(height: 22),
+                    Text(
+                      'So funktioniert ZigiQuest',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.w900),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Sammle in deinem Tempo – einzelne Funde sofort oder als bewusste Cleanup-Runde.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    const _HowItWorksStep(
+                      icon: Icons.touch_app_rounded,
+                      title: 'Schnell erfassen',
+                      body:
+                          'Tippe auf das Glas, wenn du einzelne Zigis findest.',
+                    ),
+                    const SizedBox(height: 12),
+                    const _HowItWorksStep(
+                      icon: Icons.timer_outlined,
+                      title: 'Cleanup-Runde starten',
+                      body:
+                          'Halte Zeit, optionalen Standort und ein Foto zu einer bewussten Runde fest.',
+                    ),
+                    const SizedBox(height: 12),
+                    const _HowItWorksStep(
+                      icon: Icons.insights_rounded,
+                      title: 'Wirkung wiedersehen',
+                      body:
+                          'Dein Verlauf zeigt dir Tage und abgeschlossene Cleanup-Runden.',
+                    ),
+                    const SizedBox(height: 30),
+                    FilledButton.icon(
+                      onPressed: onContinue,
+                      icon: const Icon(Icons.arrow_forward_rounded),
+                      label: const Text('Weiter'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HowItWorksStep extends StatelessWidget {
+  const _HowItWorksStep({
+    required this.icon,
+    required this.title,
+    required this.body,
+  });
+
+  final IconData icon;
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 28),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 3),
+                Text(body),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class SetupScreen extends ConsumerStatefulWidget {
