@@ -65,10 +65,14 @@ class RatingService {
   Future<void> notNow() =>
       _setString(_notNowKey, DateTime.now().toUtc().toIso8601String());
   Future<void> never() => _setBool(_neverKey, true);
-  Future<void> requestReview() async {
-    await _setBool(_shownKey, true);
+  Future<bool> requestReview() async {
     try {
-      if (await _review.isAvailable()) await _review.requestReview();
-    } catch (_) {}
+      if (!await _review.isAvailable()) return false;
+      await _review.requestReview();
+      await _setBool(_shownKey, true);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 }

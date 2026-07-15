@@ -109,7 +109,7 @@ class _RecentBars extends StatelessWidget {
     if (recent.isEmpty)
       return const SizedBox(
         height: 115,
-        child: Center(child: Text('Noch keine Eintr\u00e4ge.')),
+        child: Center(child: Text('Noch keine Einträge.')),
       );
     final maxCount = recent
         .map((row) => row.count)

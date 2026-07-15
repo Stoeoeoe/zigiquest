@@ -63,7 +63,7 @@ class DataPort {
           item['count'] is! int ||
           (item['count'] as int) < 0 ||
           DateTime.tryParse(item['date'] as String) == null)
-        throw const FormatException('Ung\u00fcltiger Tageseintrag.');
+        throw const FormatException('Ungültiger Tageseintrag.');
       final now = DateTime.now();
       parsed.add(
         DailyEntriesCompanion.insert(

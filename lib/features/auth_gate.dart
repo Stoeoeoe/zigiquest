@@ -158,7 +158,7 @@ class SetupScreen extends ConsumerStatefulWidget {
 class _SetupScreenState extends ConsumerState<SetupScreen> {
   String _themeMode = 'system';
   bool _haptics = true;
-  bool _sound = false;
+  final bool _sound = false;
   bool _reducedMotion = false;
   bool _cloudBackup = false;
   bool _saving = false;
@@ -243,9 +243,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                   SwitchListTile(
                     secondary: const Icon(Icons.motion_photos_off_rounded),
                     title: const Text('Reduzierte Bewegung'),
-                    subtitle: const Text(
-                      'Weniger Animationen im Gefäss.',
-                    ),
+                    subtitle: const Text('Weniger Animationen im Gefäss.'),
                     value: _reducedMotion,
                     onChanged: (value) =>
                         setState(() => _reducedMotion = value),
@@ -277,10 +275,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
-              'PRIVATSPHÄRE',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
+            Text('PRIVATSPHÄRE', style: Theme.of(context).textTheme.labelLarge),
             Card(
               child: SwitchListTile(
                 secondary: const Icon(Icons.cloud_upload_rounded),

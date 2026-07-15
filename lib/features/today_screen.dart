@@ -1,6 +1,6 @@
 part of 'screens.dart';
 
-const _zigisPerJar = 20;
+const _zigisPerJar = 50;
 
 class TodayScreen extends ConsumerWidget {
   const TodayScreen({super.key});
@@ -10,9 +10,8 @@ class TodayScreen extends ConsumerWidget {
     final rows = ref.watch(entriesProvider).value ?? const <DailyEntry>[];
     final today =
         rows.where((row) => row.dateKey == dayKey()).firstOrNull?.count ?? 0;
-    final total = rows.fold<int>(0, (sum, row) => sum + row.count);
-    final completedJars = today ~/ _zigisPerJar;
     final activeJarCount = today % _zigisPerJar;
+    final completedJars = today ~/ _zigisPerJar;
     final settings = ref.watch(settingsProvider).value;
     final user = ref.watch(authUserProvider).value;
     final activeSession = ref.watch(activeSessionProvider).value;
@@ -48,7 +47,6 @@ class TodayScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 18),
-                const SizedBox(height: 12),
                 FilledButton.icon(
                   onPressed: () => context.push('/session'),
                   style: FilledButton.styleFrom(
@@ -59,11 +57,10 @@ class TodayScreen extends ConsumerWidget {
                     activeSession == null
                         ? 'CLEANUP STARTEN'
                         : 'CLEANUP FORTSETZEN',
-                    style: TextStyle(letterSpacing: 1.1),
+                    style: const TextStyle(letterSpacing: 1.1),
                   ),
                 ),
                 const SizedBox(height: 12),
-
                 Semantics(
                   liveRegion: true,
                   label: '$today Zigis heute gesammelt',
@@ -108,105 +105,63 @@ class TodayScreen extends ConsumerWidget {
                                     ),
                               ),
                             ),
+                            IconButton(
+                              tooltip: 'Anzahl korrigieren',
+                              onPressed: () => _editCount(context, ref, today),
+                              icon: const Icon(Icons.edit_rounded),
+                            ),
                           ],
                         ),
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 280),
-                          switchInCurve: Curves.easeOutBack,
-                          switchOutCurve: Curves.easeIn,
-                          transitionBuilder: (child, animation) =>
-                              FadeTransition(
-                                opacity: animation,
-                                child: ScaleTransition(
-                                  scale: Tween<double>(
-                                    begin: .96,
-                                    end: 1,
-                                  ).animate(animation),
-                                  alignment: Alignment.bottomCenter,
-                                  child: child,
-                                ),
-                              ),
-                          child: SizedBox(
-                            key: ValueKey('jar-$completedJars-$activeJarCount'),
-                            height: 330,
-                            child: ZigiPileView(
-                              count: activeJarCount,
-                              countLabel:
-                                  '$activeJarCount / $_zigisPerJar IM AKTUELLEN GLAS',
-                              reducedMotion: settings?.reducedMotion ?? false,
-                              containerStyle:
-                                  settings?.containerStyle ?? 'glass_jar',
-                              seed: settings?.userSeed ?? 7319,
-                              persistenceKey: 'today_jar__',
-                              visualLimit: _zigisPerJar,
-                              effectsEnabled:
-                                  settings?.environmentEffectsEnabled ?? true,
-                            ),
+                        SizedBox(
+                          height: 330,
+                          child: ZigiPileView(
+                            count: activeJarCount,
+                            countLabel:
+                                '$activeJarCount / $_zigisPerJar IM AKTUELLEN GLAS',
+                            reducedMotion: settings?.reducedMotion ?? false,
+                            containerStyle:
+                                settings?.containerStyle ?? 'glass_jar',
+                            seed: settings?.userSeed ?? 7319,
+                            persistenceKey: 'today_pile_50_v1',
+                            effectsEnabled:
+                                settings?.environmentEffectsEnabled ?? true,
+                            onAdd: () async {
+                              final next = today + 1;
+                              await ref
+                                  .read(repositoryProvider)
+                                  .change(DateTime.now(), 1);
+                              if (settings?.hapticsEnabled ?? true) {
+                                HapticFeedback.lightImpact();
+                              }
+                              if (next % _zigisPerJar == 0 && context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Glas gefuellt! Ein neues leeres Glas ist bereit.',
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            onRemove: () => ref
+                                .read(repositoryProvider)
+                                .change(DateTime.now(), -1),
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        _JarShelf(
-                          completedJars: completedJars,
-                          activeJarCount: activeJarCount,
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton.filledTonal(
-                              tooltip: 'Eine Zigi entfernen',
-                              onPressed: today == 0
-                                  ? null
-                                  : () => ref
-                                        .read(repositoryProvider)
-                                        .change(DateTime.now(), -1),
-                              icon: const Icon(Icons.remove_rounded),
-                              iconSize: 28,
-                              style: IconButton.styleFrom(
-                                minimumSize: const Size(56, 56),
-                              ),
+                        if (completedJars > 0) ...[
+                          const SizedBox(height: 8),
+                          Chip(
+                            avatar: const Icon(
+                              Icons.wine_bar_rounded,
+                              size: 18,
                             ),
-                            const SizedBox(width: 18),
-                            FilledButton.icon(
-                              onPressed: () {
-                                ref
-                                    .read(repositoryProvider)
-                                    .change(DateTime.now(), 1);
-                                if (settings?.hapticsEnabled ?? true)
-                                  HapticFeedback.lightImpact();
-                              },
-                              style: FilledButton.styleFrom(
-                                minimumSize: const Size(132, 64),
-                              ),
-                              icon: const Icon(Icons.add_rounded, size: 30),
-                              label: const Text(
-                                'ZIGI',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
+                            label: Text(
+                              '$completedJars ${completedJars == 1 ? 'Glas' : 'Glaeser'} gefuellt',
                             ),
-                            const SizedBox(width: 18),
-                            IconButton.filledTonal(
-                              tooltip: 'Exakten Z\u00e4hler eingeben',
-                              onPressed: () => _exact(context, ref, today),
-                              icon: const Icon(Icons.edit_rounded),
-                              style: IconButton.styleFrom(
-                                minimumSize: const Size(56, 56),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ],
                     ),
-                  ),
-                ),
-                Text(
-                  '$total insgesamt gesammelt',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -217,12 +172,16 @@ class TodayScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _exact(BuildContext context, WidgetRef ref, int value) async {
-    final controller = TextEditingController(text: '$value');
-    final result = await showDialog<int>(
+  Future<void> _editCount(
+    BuildContext context,
+    WidgetRef ref,
+    int current,
+  ) async {
+    final controller = TextEditingController(text: '$current');
+    final value = await showDialog<int>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Exakten Wert setzen'),
+        title: const Text('Zigis von heute korrigieren'),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -239,88 +198,16 @@ class TodayScreen extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () =>
-                Navigator.pop(context, int.tryParse(controller.text)),
+                Navigator.pop(context, int.tryParse(controller.text.trim())),
             child: const Text('Speichern'),
           ),
         ],
       ),
     );
-    if (result != null)
-      await ref.read(repositoryProvider).setCount(DateTime.now(), result);
+    if (value != null) {
+      await ref.read(repositoryProvider).setCount(DateTime.now(), value);
+    }
   }
-}
-
-class _JarShelf extends StatelessWidget {
-  const _JarShelf({required this.completedJars, required this.activeJarCount});
-
-  final int completedJars;
-  final int activeJarCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final label = completedJars == 0
-        ? '$activeJarCount / $_zigisPerJar im ersten Glas'
-        : '$completedJars volle ${completedJars == 1 ? 'Glas' : 'Gläser'}';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow.withValues(alpha: .78),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: colors.outlineVariant.withValues(alpha: .55)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.inventory_2_rounded, color: colors.primary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(label, style: Theme.of(context).textTheme.labelMedium),
-          ),
-          if (completedJars > 0) ...[
-            const SizedBox(width: 10),
-            const _MiniFullJar(),
-          ],
-        ],
-      ),
-    );
-  }
-}
-class _MiniFullJar extends StatelessWidget {
-  const _MiniFullJar();
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 27,
-    height: 39,
-    child: Stack(
-      fit: StackFit.expand,
-      children: [
-        Image.asset(
-          'assets/vessels/glass_jar/vessel_back.png',
-          fit: BoxFit.fill,
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: FractionallySizedBox(
-            heightFactor: .36,
-            widthFactor: .60,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: const Color(0xffb87543).withValues(alpha: .80),
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(5),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Image.asset(
-          'assets/vessels/glass_jar/vessel_front.png',
-          fit: BoxFit.fill,
-        ),
-      ],
-    ),
-  );
 }
 
 class _TodayBackdrop extends StatelessWidget {

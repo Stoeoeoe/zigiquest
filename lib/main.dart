@@ -57,7 +57,10 @@ class _BootstrapAppState extends State<_BootstrapApp> {
     builder: (context, snapshot) {
       if (snapshot.connectionState != ConnectionState.done ||
           _database == null) {
-        return const ZigiSplashScreen();
+        return const MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: ZigiSplashScreen(),
+        );
       }
       return ProviderScope(
         overrides: [databaseProvider.overrideWithValue(_database!)],

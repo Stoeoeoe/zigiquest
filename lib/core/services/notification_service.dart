@@ -76,7 +76,7 @@ class NotificationService {
     try {
       await _plugin.zonedSchedule(
         id: reminderId,
-        title: 'Zeit f\u00fcr eine kleine Runde?',
+        title: 'Zeit für eine kleine Runde?',
         body: inactive
             ? 'Wenn du magst: Ein kurzer Cleanup macht einen sichtbaren Unterschied.'
             : 'Lust auf einen kleinen Cleanup-Spaziergang? Ganz ohne Druck.',

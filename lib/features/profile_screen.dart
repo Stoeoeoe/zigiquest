@@ -52,7 +52,7 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                         Text(
                           user == null
-                              ? 'Lokal auf diesem Ger\u00e4t'
+                              ? 'Lokal auf diesem Gerät'
                               : (user.email ?? 'Angemeldet'),
                         ),
                       ],
@@ -60,7 +60,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   if (user != null)
                     IconButton(
-                      tooltip: 'Name \u00e4ndern',
+                      tooltip: 'Name ändern',
                       onPressed: () =>
                           _editName(context, ref, user.id, signedName),
                       icon: const Icon(Icons.edit_outlined),

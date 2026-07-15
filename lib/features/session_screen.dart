@@ -178,12 +178,15 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Foto konnte nicht verarbeitet werden.')),
+          const SnackBar(
+            content: Text('Foto konnte nicht verarbeitet werden.'),
+          ),
         );
       }
       return null;
     }
   }
+
   Future<void> _finish() async {
     _timer?.cancel();
     final active = _active;
@@ -201,6 +204,7 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
       setState(() => _after = photo);
     }
   }
+
   Future<void> _save() async {
     final db = ref.read(databaseProvider);
     final now = DateTime.now().toUtc();
@@ -257,7 +261,8 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
                 createdAt: now,
               ),
             );
-      }      await db
+      }
+      await db
           .into(db.syncOutbox)
           .insert(
             SyncOutboxCompanion.insert(
@@ -470,7 +475,10 @@ class _ActiveSession extends StatelessWidget {
                   const SizedBox(height: 6),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: colors.surfaceContainerLow.withValues(alpha: .8),
                       borderRadius: BorderRadius.circular(14),
@@ -488,9 +496,8 @@ class _ActiveSession extends StatelessWidget {
                             hint.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
+                            style: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(color: colors.onSurfaceVariant),
                           ),
                         ),
                       ],
@@ -502,51 +509,23 @@ class _ActiveSession extends StatelessWidget {
                       button: true,
                       label:
                           'Gef\u00e4\u00df antippen, um eine Zigi hinzuzuf\u00fcgen',
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => onChange(1),
-                        child: Center(
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: ZigiPileView(
-                              count: count,
-                              countLabel: '$count IN DIESER RUNDE',
-                              reducedMotion: reducedMotion,
-                              containerStyle: containerStyle,
-                              seed: seed,
-                              persistenceKey: persistenceKey,
-                              visualLimit: _zigisPerJar,
-                              effectsEnabled: effectsEnabled,
-                            ),
+                      child: Center(
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: ZigiPileView(
+                            count: count,
+                            countLabel: '$count IN DIESER RUNDE',
+                            reducedMotion: reducedMotion,
+                            containerStyle: containerStyle,
+                            seed: seed,
+                            persistenceKey: persistenceKey,
+                            effectsEnabled: effectsEnabled,
+                            onAdd: () => onChange(1),
+                            onRemove: count == 0 ? null : () => onChange(-1),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton.filledTonal(
-                        tooltip: 'Eine Zigi entfernen',
-                        onPressed: count == 0 ? null : () => onChange(-1),
-                        icon: const Icon(Icons.remove_rounded),
-                        iconSize: 26,
-                      ),
-                      const SizedBox(width: 18),
-                      Text(
-                        '$count',
-                        style: Theme.of(context).textTheme.displaySmall
-                            ?.copyWith(color: colors.primary),
-                      ),
-                      const SizedBox(width: 18),
-                      IconButton.filled(
-                        tooltip: 'Eine Zigi hinzuf\u00fcgen',
-                        onPressed: () => onChange(1),
-                        icon: const Icon(Icons.add_rounded),
-                        iconSize: 27,
-                      ),
-                    ],
                   ),
                   const SizedBox(height: 10),
                   FilledButton.icon(
@@ -588,6 +567,7 @@ class _CleanupBackdrop extends StatelessWidget {
     );
   }
 }
+
 class _FinishSession extends StatelessWidget {
   const _FinishSession({
     required this.count,
@@ -684,6 +664,7 @@ class _FinishSession extends StatelessWidget {
     ),
   );
 }
+
 class _SavedSession extends StatelessWidget {
   const _SavedSession({
     required this.count,
@@ -730,12 +711,17 @@ class _SavedSession extends StatelessWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: colors.primaryContainer.withValues(alpha: .72),
+                            color: colors.primaryContainer.withValues(
+                              alpha: .72,
+                            ),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.inventory_2_rounded, color: colors.primary),
+                              Icon(
+                                Icons.inventory_2_rounded,
+                                color: colors.primary,
+                              ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
@@ -756,7 +742,7 @@ class _SavedSession extends StatelessWidget {
                         FilledButton.icon(
                           onPressed: () => context.go('/'),
                           icon: const Icon(Icons.wb_sunny_rounded),
-                          label: const Text('Zu Heute'),
+                          label: const Text('Zur Startseite'),
                         ),
                       ],
                     ),
@@ -770,40 +756,80 @@ class _SavedSession extends StatelessWidget {
     );
   }
 }
-class _RatingBanner extends StatelessWidget {
+
+class _RatingBanner extends StatefulWidget {
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.secondaryContainer,
-      borderRadius: BorderRadius.circular(18),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Eine kleine Bitte \u2013 nur wenn ZigiQuest sie verdient hat.',
+  State<_RatingBanner> createState() => _RatingBannerState();
+}
+
+class _RatingBannerState extends State<_RatingBanner> {
+  bool _dismissed = false;
+  bool _requesting = false;
+
+  Future<void> _dismiss(Future<void> Function() action) async {
+    await action();
+    if (mounted) setState(() => _dismissed = true);
+  }
+
+  Future<void> _requestReview() async {
+    setState(() => _requesting = true);
+    final shown = await RatingService().requestReview();
+    if (!mounted) return;
+    if (shown) {
+      setState(() {
+        _dismissed = true;
+        _requesting = false;
+      });
+      return;
+    }
+    setState(() => _requesting = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Die Bewertungsanfrage ist auf diesem Gerät noch nicht verfuegbar.',
         ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 6,
-          children: [
-            FilledButton.tonal(
-              onPressed: () => RatingService().requestReview(),
-              child: const Text('ZigiQuest bewerten'),
-            ),
-            TextButton(
-              onPressed: () => RatingService().notNow(),
-              child: const Text('Nicht jetzt'),
-            ),
-            TextButton(
-              onPressed: () => RatingService().never(),
-              child: const Text('Nicht mehr fragen'),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_dismissed) return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Eine kleine Bitte \u2013 nur wenn ZigiQuest sie verdient hat.',
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            children: [
+              FilledButton.tonal(
+                onPressed: _requesting ? null : _requestReview,
+                child: Text(
+                  _requesting ? 'Einen Moment ...' : 'ZigiQuest bewerten',
+                ),
+              ),
+              TextButton(
+                onPressed: () => _dismiss(RatingService().notNow),
+                child: const Text('Nicht jetzt'),
+              ),
+              TextButton(
+                onPressed: () => _dismiss(RatingService().never),
+                child: const Text('Nicht mehr fragen'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
