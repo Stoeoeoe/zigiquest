@@ -5,13 +5,14 @@ class HistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final rows = ref.watch(entriesProvider).value ?? const <DailyEntry>[];
     final sessions =
         ref.watch(sessionsProvider).value ?? const <CleanupSession>[];
     final total = rows.fold<int>(0, (sum, row) => sum + row.count);
     final ordered = [...rows]..sort((a, b) => b.dateKey.compareTo(a.dateKey));
     return Scaffold(
-      appBar: AppBar(title: const Text('Dein Verlauf')),
+      appBar: AppBar(title: Text(l10n.historyTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
         children: [
@@ -27,7 +28,7 @@ class HistoryScreen extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                  const Text('Zigis insgesamt gesammelt'),
+                  Text(l10n.historyTotal),
                   const SizedBox(height: 18),
                   _RecentBars(rows: ordered),
                 ],
@@ -35,13 +36,13 @@ class HistoryScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Text('TAGEBUCH', style: Theme.of(context).textTheme.labelLarge),
+          Text(l10n.historyDiary, style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 8),
           if (ordered.isEmpty)
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(22),
-                child: Text('Deine gesammelten Zigis erscheinen hier.'),
+                padding: const EdgeInsets.all(22),
+                child: Text(l10n.historyEmpty),
               ),
             ),
           for (final row in ordered)
@@ -53,24 +54,28 @@ class HistoryScreen extends ConsumerWidget {
                   title: Text(
                     DateFormat(
                       'EEEE, d. MMMM',
-                      'de_CH',
+                      Localizations.localeOf(context).toString(),
                     ).format(DateTime.parse(row.dateKey)),
                   ),
-                  subtitle: Text('${row.count} Zigis'),
+                  subtitle: Text(
+                    row.count == 1
+                        ? l10n.historyCountOne
+                        : l10n.historyCount(row.count),
+                  ),
                   trailing: const Icon(Icons.edit_outlined),
                   onTap: () => _edit(context, ref, row),
                 ),
               ),
             ),
           const SizedBox(height: 16),
-          Text('CLEANUP-RUNDEN', style: Theme.of(context).textTheme.labelLarge),
+          Text(l10n.historyRounds, style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 8),
           if (sessions.isEmpty)
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(22),
+                padding: const EdgeInsets.all(22),
                 child: Text(
-                  'Abgeschlossene Cleanup-Runden erscheinen hier mit ihren Details.',
+                  l10n.historyRoundsEmpty,
                 ),
               ),
             ),
@@ -89,11 +94,12 @@ class HistoryScreen extends ConsumerWidget {
     WidgetRef ref,
     DailyEntry row,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: '${row.count}');
     final count = await showDialog<int>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tageswert anpassen'),
+        title: Text(l10n.historyEditTitle),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
@@ -102,20 +108,21 @@ class HistoryScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Abbrechen'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () =>
                 Navigator.pop(context, int.tryParse(controller.text)),
-            child: const Text('Speichern'),
+            child: Text(l10n.save),
           ),
         ],
       ),
     );
-    if (count != null)
+    if (count != null) {
       await ref
           .read(repositoryProvider)
           .setCount(DateTime.parse(row.dateKey), count);
+    }
   }
 }
 
@@ -126,6 +133,7 @@ class _SessionHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final duration = session.durationSeconds == null
         ? null
         : Duration(seconds: session.durationSeconds!);
@@ -139,11 +147,13 @@ class _SessionHistoryTile extends StatelessWidget {
           ),
         ),
         title: Text(
-          DateFormat('d. MMMM, HH:mm', 'de_CH').format(session.startedAt),
+          DateFormat('d. MMMM, HH:mm', Localizations.localeOf(context).toString()).format(session.startedAt),
         ),
         subtitle: Text(
-          '${session.count} ${session.count == 1 ? 'Zigi' : 'Zigis'}'
-          '${duration == null ? '' : ' · ${_duration(duration)}'}',
+          (session.count == 1
+              ? l10n.historyCountOne
+              : l10n.historyCount(session.count)) +
+          (duration == null ? '' : ' · ${_duration(duration)}'),
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () => _showSessionDetails(context, session),
@@ -169,6 +179,7 @@ class _SessionDetailsSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final db = ref.watch(databaseProvider);
     return SafeArea(
       child: FractionallySizedBox(
@@ -184,14 +195,14 @@ class _SessionDetailsSheet extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(22, 4, 22, 28),
               children: [
                 Text(
-                  'Cleanup-Runde',
+                  l10n.sessionFinishTitle, // Reusing existing key
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 6),
                 Text(
                   DateFormat(
                     'EEEE, d. MMMM · HH:mm',
-                    'de_CH',
+                    Localizations.localeOf(context).toString(),
                   ).format(session.startedAt),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -206,7 +217,7 @@ class _SessionDetailsSheet extends ConsumerWidget {
                         Expanded(
                           child: _SessionMetric(
                             value: '${session.count}',
-                            label: 'Zigis gesammelt',
+                            label: l10n.historySessionMetricZigis,
                           ),
                         ),
                         if (duration != null) ...[
@@ -214,7 +225,7 @@ class _SessionDetailsSheet extends ConsumerWidget {
                           Expanded(
                             child: _SessionMetric(
                               value: _duration(duration),
-                              label: 'Dauer',
+                              label: l10n.historySessionMetricDuration,
                             ),
                           ),
                         ],
@@ -223,7 +234,7 @@ class _SessionDetailsSheet extends ConsumerWidget {
                           Expanded(
                             child: _SessionMetric(
                               value: '${session.distanceMeters!.round()} m',
-                              label: 'Weg',
+                              label: l10n.historySessionMetricPath,
                             ),
                           ),
                         ],
@@ -234,7 +245,7 @@ class _SessionDetailsSheet extends ConsumerWidget {
                 const SizedBox(height: 18),
                 _TrackingSummary(mode: session.locationMode),
                 const SizedBox(height: 20),
-                Text('FOTOS', style: Theme.of(context).textTheme.labelLarge),
+                Text(l10n.historyPhotos, style: Theme.of(context).textTheme.labelLarge),
                 const SizedBox(height: 8),
                 if (snapshot.connectionState == ConnectionState.waiting)
                   const Center(
@@ -244,12 +255,10 @@ class _SessionDetailsSheet extends ConsumerWidget {
                     ),
                   )
                 else if (photos.isEmpty)
-                  const Card(
+                  Card(
                     child: Padding(
-                      padding: EdgeInsets.all(18),
-                      child: Text(
-                        'Für diese Runde wurde kein Foto gespeichert.',
-                      ),
+                      padding: const EdgeInsets.all(18),
+                      child: Text(l10n.historyPhotosEmpty),
                     ),
                   )
                 else
@@ -266,11 +275,11 @@ class _SessionDetailsSheet extends ConsumerWidget {
                               height: 220,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => const SizedBox(
+                              errorBuilder: (_, _, _) => SizedBox(
                                 height: 120,
                                 child: Center(
                                   child: Text(
-                                    'Foto ist auf diesem Gerät nicht mehr verfügbar.',
+                                    l10n.remotePhotosPreviewError,
                                   ),
                                 ),
                               ),
@@ -279,8 +288,8 @@ class _SessionDetailsSheet extends ConsumerWidget {
                               padding: const EdgeInsets.all(12),
                               child: Text(
                                 photo.type == 'before'
-                                    ? 'Vorher'
-                                    : 'Abschlussfoto',
+                                    ? l10n.historyPhotoBefore
+                                    : l10n.historyPhotoAfter,
                               ),
                             ),
                           ],
@@ -319,21 +328,22 @@ class _TrackingSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final (icon, title, body) = switch (mode) {
       'point' => (
         Icons.my_location_rounded,
-        'Standortpunkt gespeichert',
-        'Der Standort bleibt privat und gehört nur zu dieser Cleanup-Runde.',
+        l10n.historyTrackingPointTitle,
+        l10n.historyTrackingPointBody,
       ),
       'route' => (
         Icons.route_rounded,
-        'Route gespeichert',
-        'Die Route bleibt privat und gehört nur zu dieser Cleanup-Runde.',
+        l10n.historyTrackingRouteTitle,
+        l10n.historyTrackingRouteBody,
       ),
       _ => (
         Icons.location_off_rounded,
-        'Ohne Standort gespeichert',
-        'Für diese Cleanup-Runde wurden keine Standortdaten gespeichert.',
+        l10n.historyTrackingNoneTitle,
+        l10n.historyTrackingNoneBody,
       ),
     };
     return Card(
@@ -351,12 +361,14 @@ class _RecentBars extends StatelessWidget {
   final List<DailyEntry> rows;
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final recent = rows.take(7).toList().reversed.toList();
-    if (recent.isEmpty)
-      return const SizedBox(
+    if (recent.isEmpty) {
+      return SizedBox(
         height: 115,
-        child: Center(child: Text('Noch keine Einträge.')),
+        child: Center(child: Text(l10n.historyRecentEmpty)),
       );
+    }
     final maxCount = recent
         .map((row) => row.count)
         .reduce((a, b) => a > b ? a : b)
@@ -395,7 +407,7 @@ class _RecentBars extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      DateFormat.E('de_CH').format(DateTime.parse(row.dateKey)),
+                      DateFormat.E(Localizations.localeOf(context).toString()).format(DateTime.parse(row.dateKey)),
                       style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ],

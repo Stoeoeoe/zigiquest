@@ -2,11 +2,11 @@ import 'package:flutter/widgets.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../database/app_database.dart';
-import 'supabase_bootstrap.dart';
-import 'sync_service.dart';
 import 'active_session_store.dart';
 import 'notification_service.dart';
 import 'session_persistence.dart';
+import 'supabase_bootstrap.dart';
+import 'sync_service.dart';
 
 const backgroundSyncTask = 'zigiquest.sync-outbox';
 const backgroundSyncUniqueName = 'zigiquest.periodic-sync';
@@ -18,7 +18,22 @@ void backgroundSyncDispatcher() {
     await initializeSupabase();
     final database = AppDatabase.open();
     try {
-      if (task == sessionExpiryTask) {
+      if (task == sessionInactivityReminderTask) {
+        final store = ActiveSessionStore();
+        final active = await store.load();
+        if (active != null) {
+          if (active.isExpired) {
+            await SessionPersistence(
+              database,
+            ).finalizeActive(active, endedAt: active.expiresAt);
+            await store.clear();
+          } else if (active.isReminderDue) {
+            await initializeNotifications();
+            await NotificationService.instance.showSessionInactivityReminder();
+            await store.scheduleFinalization(active);
+          }
+        }
+      } else if (task == sessionFinalizationTask) {
         final store = ActiveSessionStore();
         final active = await store.load();
         if (active != null && active.isExpired) {
@@ -26,15 +41,12 @@ void backgroundSyncDispatcher() {
             database,
           ).finalizeActive(active, endedAt: active.expiresAt);
           await store.clear();
-          await initializeNotifications();
-          await NotificationService.instance.showSessionExpired();
         }
       } else {
         await SyncService(database, configuredSupabase()).flush();
       }
       return true;
     } catch (_) {
-      // Returning false asks Android WorkManager to retry with backoff.
       return false;
     } finally {
       await database.close();

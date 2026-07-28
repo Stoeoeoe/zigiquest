@@ -10,6 +10,7 @@ import '../features/community_screen.dart';
 import '../features/discover_screen.dart';
 import '../features/remote_photos_screen.dart';
 import '../features/screens.dart';
+import '../l10n/app_localizations.dart';
 
 final settingsProvider = StreamProvider<AppPreference>(
   (ref) => ref.watch(databaseProvider).watchSettings(),
@@ -80,7 +81,10 @@ class ZigiQuestApp extends ConsumerWidget {
       _ => ThemeMode.system,
     };
     return MaterialApp.router(
-      title: 'ZigiQuest',
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: settings?.locale != null ? Locale(settings!.locale!) : null,
       debugShowCheckedModeBanner: false,
       themeMode: mode,
       theme: _theme(Brightness.light),
@@ -192,31 +196,31 @@ class HomeShell extends StatelessWidget {
       selectedIndex: shell.currentIndex,
       onDestinationSelected: (index) =>
           shell.goBranch(index, initialLocation: index == shell.currentIndex),
-      destinations: const [
+      destinations: [
         NavigationDestination(
-          icon: Icon(Icons.wb_sunny_outlined),
-          selectedIcon: Icon(Icons.wb_sunny_rounded),
-          label: 'Heute',
+          icon: const Icon(Icons.wb_sunny_outlined),
+          selectedIcon: const Icon(Icons.wb_sunny_rounded),
+          label: AppLocalizations.of(context)!.navToday,
         ),
         NavigationDestination(
-          icon: Icon(Icons.insights_outlined),
-          selectedIcon: Icon(Icons.insights_rounded),
-          label: 'Verlauf',
+          icon: const Icon(Icons.insights_outlined),
+          selectedIcon: const Icon(Icons.insights_rounded),
+          label: AppLocalizations.of(context)!.navHistory,
         ),
         NavigationDestination(
-          icon: Icon(Icons.auto_awesome_outlined),
-          selectedIcon: Icon(Icons.auto_awesome),
-          label: 'Quests',
+          icon: const Icon(Icons.auto_awesome_outlined),
+          selectedIcon: const Icon(Icons.auto_awesome),
+          label: AppLocalizations.of(context)!.navQuests,
         ),
         NavigationDestination(
-          icon: Icon(Icons.lightbulb_outline_rounded),
-          selectedIcon: Icon(Icons.lightbulb_rounded),
-          label: 'Wissen',
+          icon: const Icon(Icons.lightbulb_outline_rounded),
+          selectedIcon: const Icon(Icons.lightbulb_rounded),
+          label: AppLocalizations.of(context)!.navKnowledge,
         ),
         NavigationDestination(
-          icon: Icon(Icons.tune_outlined),
-          selectedIcon: Icon(Icons.tune_rounded),
-          label: 'Optionen',
+          icon: const Icon(Icons.tune_outlined),
+          selectedIcon: const Icon(Icons.tune_rounded),
+          label: AppLocalizations.of(context)!.navSettings,
         ),
       ],
     ),

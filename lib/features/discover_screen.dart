@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../l10n/app_localizations.dart';
 import 'discover_content.dart';
 
 class DailyBriefingBanner extends StatefulWidget {
@@ -60,6 +61,7 @@ class _DailyBriefingBannerState extends State<DailyBriefingBanner> {
   @override
   Widget build(BuildContext context) {
     if (!_ready || _dismissed) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context)!;
     final card = DiscoverCard.forDay(DateTime.now());
     final colors = Theme.of(context).colorScheme;
     return Padding(
@@ -89,14 +91,14 @@ class _DailyBriefingBannerState extends State<DailyBriefingBanner> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        card.label,
+                        card.label(context),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.1,
                         ),
                       ),
                       Text(
-                        card.title,
+                        card.title(context),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -107,7 +109,7 @@ class _DailyBriefingBannerState extends State<DailyBriefingBanner> {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Heute ausblenden',
+                  tooltip: l10n.discoverDismissTooltip,
                   onPressed: _dismiss,
                   icon: const Icon(Icons.close_rounded),
                 ),
@@ -125,13 +127,14 @@ class DiscoverScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final today = DiscoverCard.forDay(DateTime.now());
     final cards = [
       today,
       ...discoverCards.where((card) => card.id != today.id),
     ];
     return Scaffold(
-      appBar: AppBar(title: const Text('Tipps & Wissen')),
+      appBar: AppBar(title: Text(l10n.discoverTitle)),
       body: ListView.separated(
         padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
         itemCount: cards.length + 1,
@@ -139,7 +142,7 @@ class DiscoverScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           if (index == 0) {
             return Text(
-              'Lokales Wissen und praktische Ideen. Tippe eine Karte an, um Quelle und Details zu sehen.',
+              l10n.discoverSubtitle,
               style: Theme.of(context).textTheme.bodyLarge,
             );
           }
@@ -163,6 +166,7 @@ class _DiscoverTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final accent = _accent(colors);
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -188,7 +192,7 @@ class _DiscoverTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      card.label,
+                      card.label(context),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: accent,
                         fontWeight: FontWeight.w900,
@@ -197,12 +201,12 @@ class _DiscoverTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      card.title,
+                      card.title(context),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      card.body,
+                      card.body(context),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 10),
@@ -215,7 +219,7 @@ class _DiscoverTile extends StatelessWidget {
                         ),
                         const SizedBox(width: 5),
                         Text(
-                          'Quelle anzeigen',
+                          l10n.discoverSourceShow,
                           style: Theme.of(context).textTheme.labelMedium
                               ?.copyWith(color: colors.onSurfaceVariant),
                         ),
@@ -234,6 +238,7 @@ class _DiscoverTile extends StatelessWidget {
 
 Future<void> _showSource(BuildContext context, DiscoverCard card) async {
   final colors = Theme.of(context).colorScheme;
+  final l10n = AppLocalizations.of(context)!;
   await showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
@@ -250,17 +255,17 @@ Future<void> _showSource(BuildContext context, DiscoverCard card) async {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    card.title,
+                    card.title(context),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            Text(card.body, style: Theme.of(context).textTheme.bodyLarge),
+            Text(card.body(context), style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 20),
             Text(
-              'QUELLE',
+              l10n.discoverSourceLabel,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.1,
@@ -268,7 +273,7 @@ Future<void> _showSource(BuildContext context, DiscoverCard card) async {
             ),
             const SizedBox(height: 6),
             Text(
-              card.sourceLabel,
+              card.sourceLabel(context),
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 4),
@@ -288,12 +293,12 @@ Future<void> _showSource(BuildContext context, DiscoverCard card) async {
                     );
                     if (sheetContext.mounted) {
                       ScaffoldMessenger.of(sheetContext).showSnackBar(
-                        const SnackBar(content: Text('Link kopiert.')),
+                        SnackBar(content: Text(l10n.discoverLinkCopied)),
                       );
                     }
                   },
                   icon: const Icon(Icons.copy_rounded),
-                  label: const Text('Kopieren'),
+                  label: Text(l10n.discoverCopyLink),
                 ),
                 const SizedBox(width: 10),
                 FilledButton.icon(
@@ -304,14 +309,14 @@ Future<void> _showSource(BuildContext context, DiscoverCard card) async {
                     );
                     if (!launched && sheetContext.mounted) {
                       ScaffoldMessenger.of(sheetContext).showSnackBar(
-                        const SnackBar(
-                          content: Text('Link konnte nicht geöffnet werden.'),
+                        SnackBar(
+                          content: Text(l10n.discoverLinkError),
                         ),
                       );
                     }
                   },
                   icon: const Icon(Icons.open_in_new_rounded),
-                  label: const Text('Öffnen'),
+                  label: Text(l10n.discoverOpenLink),
                 ),
               ],
             ),

@@ -1,0 +1,397 @@
+{
+  "@@locale": "de",
+  "appTitle": "ZigiQuest",
+  "navToday": "Heute",
+  "navHistory": "Verlauf",
+  "navQuests": "Quests",
+  "navKnowledge": "Wissen",
+  "navSettings": "Einstellungen",
+  "todayCleanupStart": "CLEANUP-RUNDE STARTEN",
+  "todayCleanupContinue": "CLEANUP FORTSETZEN",
+  "todayQuickLog": "SCHNELL ERFASSEN",
+  "todayQuickLogDescription": "Tippe das Glas für einzelne Funde.",
+  "todayCleanupDescription": "Für bewusste Runden mit Zeit, optionalem Ort und Foto.",
+  "todayCountSemantics": "{count} {count, plural, =1{Zigi} other{Zigis}} heute gesammelt",
+  "@todayCountSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayPileLabel": "{count} / {limit} IM AKTUELLEN GLAS",
+  "@todayPileLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "todayGlassFilled": "Glas gefüllt! Ein leeres Glas ist bereit.",
+  "todayCountLabel": "ZIGIS HEUTE",
+  "todayEditCount": "Anzahl korrigieren",
+  "todayEditTitle": "Zigis von heute korrigieren",
+  "amountLabel": "Anzahl",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "historyTitle": "Dein Verlauf",
+  "historyTotal": "Zigis insgesamt gesammelt",
+  "historyDiary": "TAGEBUCH",
+  "historyEmpty": "Deine gesammelten Zigis erscheinen hier.",
+  "historyRounds": "CLEANUP-RUNDEN",
+  "historyRoundsEmpty": "Abgeschlossene Cleanup-Runden erscheinen hier mit ihren Details.",
+  "historyCount": "{count} Zigis",
+  "historyCountOne": "1 Zigi",
+  "historyEditTitle": "Tageswert anpassen",
+  "historyPhotos": "FOTOS",
+  "sessionStartTitle": "Cleanup-Runde starten",
+  "sessionNoLocation": "Runde ohne Standort starten",
+  "sessionLocationPoint": "Standortpunkt speichern",
+  "sessionRoute": "Route aufzeichnen",
+  "sessionComplete": "SESSION ABSCHLIESSEN",
+  "sessionFinishTitle": "Cleanup geschafft!",
+  "sessionCollected": "ZIGIS GESAMMELT",
+  "sessionSave": "Cleanup speichern",
+  "sessionPhotoAdd": "Optionales Abschlussfoto hinzufügen",
+  "sessionPhotoChange": "Abschlussfoto ändern",
+  "sessionPhotoNone": "Kein Foto ausgewählt",
+  "sessionPhotoReady": "1 Abschlussfoto bereit zum Speichern",
+  "achievementsTitle": "Erfolge",
+  "achievementsCount": "{earned} von {total} erreicht",
+  "@achievementsCount": {
+    "placeholders": {
+      "earned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsDescription": "Deine Erfolge werden direkt auf diesem Gerät berechnet.",
+  "achievementsCollection": "DEINE SAMMLUNG",
+  "communityTitle": "Community",
+  "communityRefresh": "Aktualisieren",
+  "communityOptInTitle": "Im Ranking erscheinen?",
+  "communityOptInDescription": "Dein Nickname, Avatar und dein Wochenwert werden für andere angemeldete Nutzer sichtbar. E-Mail, Fotos und Standorte bleiben privat.",
+  "communityOptInNegative": "Nicht jetzt",
+  "communityOptInPositive": "Teilnehmen",
+  "communitySaveError": "Community-Einstellung konnte nicht gespeichert werden.",
+  "communityHeroTitle": "Gemeinsam zählt mehr.",
+  "communityHeroBody": "Melde dich an, um beim gemeinsamen Ziel mitzumachen oder das Wochenranking zu sehen.",
+  "communityOptInLabel": "Im Wochenranking erscheinen",
+  "communityOptInSublabel": "Optional: nur Nickname, Avatar und Wochenwert werden gezeigt.",
+  "communityWeeklyLabel": "DIESE WOCHE",
+  "communityPrivateMessage": "Das Ranking bleibt privat, bis du freiwillig teilnimmst.",
+  "communityEmptyLeaderboard": "Noch keine sichtbaren Wochenwerte. Du kannst den Anfang machen.",
+  "communitySyncNote": "Lokale, nicht synchronisierte Einträge bleiben immer privat und zählen erst nach erfolgreicher Synchronisierung mit.",
+  "communityGoalEmpty": "Das gemeinsame Cleanup-Ziel wird gerade eingerichtet. Schau bald wieder vorbei.",
+  "communityGoalLabel": "GEMEINSAMES ZIEL",
+  "authErrorConfig": "Anmeldung ist auf diesem Build noch nicht konfiguriert.",
+  "authErrorGoogle": "Google-Anmeldung konnte nicht gestartet werden.",
+  "welcomeTitle": "Willkommen bei ZigiQuest",
+  "welcomeSubtitle": "Sammle Zigis, halte deinen Einsatz fest und mach deine Wirkung sichtbar.",
+  "welcomeAccountInfoTitle": "Wofür ist ein Konto da?",
+  "welcomeAccountInfoBody": "Für private Sicherung und Synchronisierung zwischen Geräten. Session-Fotos können ebenfalls privat gesichert werden. Zählen, Cleanup-Runden und Verlauf funktionieren auch ohne Konto.",
+  "welcomeGoogleSignIn": "Mit Google anmelden (optional)",
+  "welcomeContinueGuest": "Ohne Konto fortfahren",
+  "welcomeFooter": "Danach richtest du die App ein. Der Gastmodus bleibt vollständig offline; ein Konto brauchst du nur für private Sicherung und Synchronisierung.",
+  "howItWorksTitle": "So funktioniert ZigiQuest",
+  "howItWorksSubtitle": "Sammle in deinem Tempo – einzelne Funde sofort oder als bewusste Cleanup-Runde.",
+  "howItWorksQuickLogTitle": "Schnell erfassen",
+  "howItWorksQuickLogBody": "Tippe auf das Glas, wenn du einzelne Zigis findest.",
+  "howItWorksSessionTitle": "Cleanup-Runde starten",
+  "howItWorksSessionBody": "Halte Zeit, optionalen Standort und ein Foto zu einer bewussten Runde fest.",
+  "howItWorksHistoryTitle": "Wirkung wiedersehen",
+  "howItWorksHistoryBody": "Dein Verlauf zeigt dir Tage und abgeschlossene Cleanup-Runden.",
+  "continueLabel": "Weiter",
+  "setupTitle": "Kurz einrichten",
+  "setupHeroTitle": "Deine App, deine Regeln.",
+  "setupHeroBody": "Du kannst alles später in den Einstellungen ändern. Standort bleibt immer aus, bis du ihn für eine Session aktiv wählst.",
+  "setupCategoryAppearance": "DARSTELLUNG",
+  "setupThemeSystem": "System",
+  "setupThemeLight": "Hell",
+  "setupThemeDark": "Dunkel",
+  "setupReducedMotionTitle": "Reduzierte Bewegung",
+  "setupReducedMotionBody": "Weniger Animationen im Gefäss.",
+  "setupCategoryFeedback": "FEEDBACK",
+  "setupHapticsTitle": "Haptik",
+  "setupHapticsBody": "Leichte Rückmeldung beim Zählen.",
+  "setupCategoryPrivacy": "PRIVATSPHÄRE",
+  "setupCloudBackupTitle": "Private Cloud-Sicherung für Fotos",
+  "setupCloudBackupBody": "Optional: hochgeladene Session-Fotos bleiben privat.",
+  "setupCloudBackupGuestBody": "Mit einem Konto verfügbar. Als Gast bleiben Fotos nur auf diesem Gerät.",
+  "setupFinish": "Speichern und starten",
+  "settingsTitle": "Einstellungen",
+  "settingsCategoryAppearance": "DARSTELLUNG",
+  "settingsThemeMode": "Erscheinungsbild",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Hell",
+  "settingsThemeDark": "Dunkel",
+  "settingsLanguage": "Sprache",
+  "settingsLanguageEn": "English (Englisch)",
+  "settingsLanguageDe": "Deutsch",
+  "settingsLanguageFr": "Français (Französisch)",
+  "settingsLanguageIt": "Italiano (Italienisch)",
+  "settingsLanguageSystem": "Systemstandard",
+  "settingsContainerStyle": "Umgebung im Glas",
+  "settingsContainerStyleSubtitle": "Wähle einen Cleanup-Ort als Hintergrund",
+  "settingsVisualEffects": "Visuelle Effekte",
+  "settingsVisualEffectsSubtitle": "Szenen-Atmosphäre, Glasglitzer und Zigi-Partikel",
+  "settingsReducedMotion": "Reduzierte Bewegung",
+  "settingsCategoryFeedback": "FEEDBACK",
+  "settingsHaptics": "Beim Zählen vibrieren",
+  "settingsCategoryNotifications": "BENACHRICHTIGUNGEN",
+  "settingsSessionLimit": "Session-Limit",
+  "settingsSessionLimitSubtitle": "Offene Sessions werden danach sicher abgeschlossen",
+  "settingsMinutes": "{count} Min.",
+  "@settingsMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsHour": "1 Stunde",
+  "settingsHours": "{count} Stunden",
+  "@settingsHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsReminders": "Sanfte Cleanup-Erinnerungen",
+  "settingsRemindersSubtitle": "Optional: wöchentlich, bei längerer Pause monatlich",
+  "settingsNotificationsDenied": "Benachrichtigungen wurden nicht erlaubt.",
+  "settingsCategoryData": "DATEN",
+  "settingsSyncTitle": "Datensynchronisierung",
+  "settingsSyncSignIn": "Melde dich an, um deine Daten zu sichern.",
+  "settingsSyncing": "Wird synchronisiert ...",
+  "settingsSyncNever": "Noch nicht synchronisiert",
+  "settingsSyncLast": "Zuletzt synchronisiert: {timestamp}",
+  "@settingsSyncLast": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCloudPhotos": "Private Cloud-Fotos",
+  "settingsCloudPhotosSubtitle": "Deine gesicherten Session-Fotos",
+  "todayTitle": "ZigiQuest",
+  "todayProfileTooltip": "Profil",
+  "todayJarsFilled": "{count} {count, plural, =1{Glas} other{Gläser}} gefüllt",
+  "@todayJarsFilled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyEditTooltip": "Bearbeiten",
+  "historySessionMetricZigis": "Zigis gesammelt",
+  "historySessionMetricDuration": "Dauer",
+  "historySessionMetricPath": "Strecke",
+  "historyTrackingPointTitle": "Standortpunkt gespeichert",
+  "historyTrackingPointBody": "Der Standort bleibt privat und gehört nur zu dieser Cleanup-Runde.",
+  "historyTrackingRouteTitle": "Route gespeichert",
+  "historyTrackingRouteBody": "Die Route bleibt privat und gehört nur zu dieser Cleanup-Runde.",
+  "historyTrackingNoneTitle": "Ohne Standort gespeichert",
+  "historyTrackingNoneBody": "Für diese Cleanup-Runde wurden keine Standortdaten gespeichert.",
+  "historyPhotosEmpty": "Für diese Runde wurde kein Foto gespeichert.",
+  "historyPhotoBefore": "Vorher",
+  "historyPhotoAfter": "Abschlussfoto",
+  "historyRecentEmpty": "Noch keine Einträge.",
+  "profileTitle": "Profil",
+  "profileGuest": "Gast",
+  "profileMember": "ZigiQuest-Mitglied",
+  "profileLoggedIn": "Angemeldet",
+  "profileEmailDefault": "Angemeldet",
+  "profileEditNameTooltip": "Name ändern",
+  "profileMetricZigis": "Zigis",
+  "profileMetricStreak": "Tage-Serie",
+  "profileMetricBadges": "Badges",
+  "profileAchievements": "Erfolge",
+  "profileAchievementsSubtitle": "Deine Meilensteine",
+  "profileCommunity": "Community",
+  "profileCommunitySubtitle": "Gemeinsam Wirkung sichtbar machen",
+  "profileSignOut": "Abmelden",
+  "profileEditNameTitle": "Anzeigename",
+  "profileSaveError": "Name konnte nicht gespeichert werden.",
+  "sessionTrackingStatusNone": "Ohne Standort",
+  "sessionTrackingStatusPoint": "Standortpunkt",
+  "sessionTrackingStatusRoute": "Route wird aufgezeichnet",
+  "sessionActiveTitle": "CLEANUP LÄUFT",
+  "sessionActiveAddSemantic": "Glas antippen, um eine Zigi hinzuzufügen",
+  "sessionJarFull": "Glas gefüllt! Ein neues leeres Glas ist bereit.",
+  "sessionFinishingMetricZigis": "Zigis gesammelt",
+  "sessionFinishingMetricDuration": "Dauer",
+  "sessionFinishingMetricPath": "Strecke",
+  "sessionFinishingPhotoChange": "Abschlussfoto ändern",
+  "sessionFinishingPhotoAdd": "Optionales Abschlussfoto hinzufügen",
+  "sessionFinishingPhotoReady": "1 Abschlussfoto bereit zum Speichern",
+  "sessionFinishingPhotoNone": "Kein Foto ausgewählt",
+  "sessionFinishingPreviewError": "Vorschau nicht verfügbar.",
+  "sessionSavedTitle": "Cleanup geschafft!",
+  "sessionSavedSummary": "{count} {count, plural, =1{Zigi} other{Zigis}} in {duration}",
+  "@sessionSavedSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionSavedXp": "+{count} XP",
+  "@sessionSavedXp": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionSavedXpNone": "Keine XP",
+  "sessionSavedInventoryAdd": "{count} {count, plural, =1{Zigi wurde} other{Zigis wurden}} zu deinem Heute-Glas hinzugefügt.",
+  "@sessionSavedInventoryAdd": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionSavedInventoryNone": "Heute wurde nichts zum Glas hinzugefügt.",
+  "sessionSavedGoHome": "Zur Startseite",
+  "sessionRatingRequest": "Eine kleine Bitte – nur wenn ZigiQuest sie verdient hat.",
+  "sessionRatingPositive": "ZigiQuest bewerten",
+  "sessionRatingNegative": "Nicht jetzt",
+  "sessionRatingNever": "Nicht mehr fragen",
+  "sessionRatingWaiting": "Einen Moment ...",
+  "sessionRatingError": "Die Bewertungsanfrage ist auf diesem Gerät noch nicht verfügbar.",
+  "sessionLocationStatusError": "Standort ist nicht verfügbar. Die Session startet ohne Standort-Tracking.",
+  "sessionStartHint": "Wähle, ob diese Runde einen Standort oder eine Route speichern darf.",
+  "sessionActiveHintLabel": "CLEANUP LÄUFT",
+  "sessionActiveJarLabel": "{count} / {limit} IM AKTUELLEN GLAS",
+  "remotePhotosTitle": "Private Cloud-Fotos",
+  "remotePhotosDeleteTitle": "Cloud-Foto löschen?",
+  "remotePhotosDeleteBody": "Die private Cloud-Kopie wird gelöscht. Eine lokale Kopie auf diesem Gerät bleibt erhalten.",
+  "remotePhotosDeleteConfirm": "Löschen",
+  "remotePhotosDeleteSuccess": "Cloud-Foto gelöscht.",
+  "remotePhotosDeleteError": "Cloud-Foto konnte nicht gelöscht werden.",
+  "remotePhotosPreviewBefore": "Vorher",
+  "remotePhotosPreviewAfter": "Abschlussfoto",
+  "remotePhotosPreviewError": "Foto konnte nicht geladen werden.",
+  "remotePhotosLoadError": "Cloud-Fotos konnten nicht geladen werden.",
+  "remotePhotosEmptyTitle": "Noch keine privaten Cloud-Fotos",
+  "remotePhotosEmptyBody": "Melde dich an, aktiviere die Cloud-Sicherung und beende eine Session mit Fotos.",
+  "remotePhotosItemLabel": "{type} · {date}",
+  "@remotePhotosItemLabel": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "questsTitle": "Quests",
+  "questsSubtitle": "Kleine Ziele helfen dir, bei einem Spaziergang etwas zu bewirken.",
+  "questsWeekly": "WOCHENQUEST",
+  "questsDaily": "TAGESQUEST",
+  "questsReward": "{progress}/{target}\n+{reward} XP",
+  "@questsReward": {
+    "placeholders": {
+      "progress": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "int"
+      }
+    }
+  },
+  "discoverTitle": "Tipps & Wissen",
+  "discoverSubtitle": "Wissen rund um den praktischen Umweltschutz und praktische Ideen. Tippe eine Karte an, um Quelle und Details zu sehen.",
+  "discoverSourceShow": "Quelle anzeigen",
+  "discoverSourceLabel": "QUELLE",
+  "discoverCopyLink": "Kopieren",
+  "discoverOpenLink": "Öffnen",
+  "discoverLinkCopied": "Link kopiert.",
+  "discoverLinkError": "Link konnte nicht geöffnet werden.",
+  "discoverDismissTooltip": "Heute ausblenden",
+  "discoverKindFact": "WISSEN",
+  "discoverKindTip": "TIPP",
+  "discoverKindQuest": "MINI-MISSION",
+  "achievement_first_find_title": "Erster Fund",
+  "achievement_first_find_description": "Sammle deine erste Zigi.",
+  "achievement_ten_cleaner_title": "Saubere Zehn",
+  "achievement_ten_cleaner_description": "Sammle insgesamt 10 Zigis.",
+  "achievement_hundred_club_title": "Hunderter-Club",
+  "achievement_hundred_club_description": "Sammle insgesamt 100 Zigis.",
+  "achievement_thousand_impact_title": "Grosse Wirkung",
+  "achievement_thousand_impact_description": "Sammle insgesamt 1'000 Zigis.",
+  "achievement_streak_three_title": "Dranbleiben",
+  "achievement_streak_three_description": "Sammle an drei Tagen in Folge.",
+  "achievement_streak_seven_title": "Sieben Tage am Stück",
+  "achievement_streak_seven_description": "Sammle an sieben Tagen in Folge.",
+  "achievement_first_session_title": "Rausgegangen",
+  "achievement_first_session_description": "Schliesse deine erste Cleanup-Session ab.",
+  "achievement_ten_sessions_title": "Cleanup-Routine",
+  "achievement_ten_sessions_description": "Schliesse zehn Cleanup-Sessions ab.",
+  "achievement_weekly_quest_title": "Wochenziel",
+  "achievement_weekly_quest_description": "Sammle 75 Zigis in einer Woche.",
+  "discover_filter_plastic_title": "Filter sind Kunststoff",
+  "discover_filter_plastic_body": "Zigarettenfilter bestehen meist aus Celluloseacetat. Sie gehören deshalb nicht in die Umwelt.",
+  "discover_swiss_shores_title": "An Schweizer Ufern häufig gefunden",
+  "discover_swiss_shores_body": "Bei einer BAFU-Erhebung an Schweizer Seen und Flüssen waren Zigarettenfilter der am häufigsten gefundene Gegenstand.",
+  "discover_gully_not_bin_title": "Ein Gully ist kein Aschenbecher",
+  "discover_gully_not_bin_body": "Abfälle gehören in den Abfallbehälter. So gelangen Kunststoffe nicht unkontrolliert in Böden und Gewässer.",
+  "discover_cleanup_kit_title": "Kleines Cleanup-Kit",
+  "discover_cleanup_kit_body": "Ein dichtes Glas oder eine kleine Dose im Rucksack macht spontane Sammelrunden einfacher.",
+  "discover_safe_pickup_title": "Sicher und sauber sammeln",
+  "discover_safe_pickup_body": "Wenn du magst, nimm Handschuhe oder eine Greifzange mit und entsorge den Inhalt danach im Abfall. Im Notfall tuts auch ein Taschentuch.",
+  "discover_micro_cleanup_title": "Mini-Mission: fünf Minuten",
+  "discover_micro_cleanup_body": "Ein kurzer Cleanup an einer Sitzbank, Bus-Haltestelle oder auf einem Parkplatz ist ein guter Anfang.",
+  "discover_hotspots_title": "Hotspots bewusst ansehen",
+  "discover_hotspots_body": "Orte mit viel Aufenthalt im Freien verdienen oft einen zweiten Blick: Sitzbänke, Parkplätze, Eingangsbereiche und Haltestellen.",
+  "discover_together_title": "Nicht allein sammeln",
+  "discover_together_body": "Mit Freundinnen, Freunden oder einer lokalen Aktion wird ein Cleanup leichter zur Gewohnheit.",
+  "notificationChannelName": "Sanfte Erinnerungen",
+  "notificationChannelDescription": "Optionale Cleanup-Erinnerungen und Hinweise.",
+  "notificationReminderTitle": "Zeit für eine kleine Runde?",
+  "notificationReminderBodyInactive": "Wenn du magst: Ein kurzer Cleanup macht einen sichtbaren Unterschied.",
+  "notificationReminderBodyActive": "Lust auf einen kleinen Cleanup-Spaziergang? Ganz ohne Druck.",
+  "notificationExpiredTitle": "Cleanup-Session beendet",
+  "notificationExpiredBody": "Deine offene Session wurde nach der eingestellten Zeit abgeschlossen.",
+  "vessel_city_label": "Stadt",
+  "vessel_river_label": "Flussufer",
+  "vessel_forest_label": "Waldweg",
+  "vessel_parking_label": "Parkplatz",
+  "vessel_add_tooltip": "Eine Zigi hinzufügen",
+  "vessel_remove_tooltip": "Eine Zigi entfernen",
+  "quest_daily_10_title": "Sammle 10 Zigis heute",
+  "quest_daily_25_title": "Sammle 25 Zigis heute",
+  "quest_session_1_title": "Schliesse eine Cleanup-Session ab",
+  "quest_weekly_75_title": "Wochenziel: 75 Zigis",
+  "quest_weekly_3_title": "Wochenziel: 3 Sessions",
+  "profileLocalOnly": "Nur auf diesem Gerät",
+  "sessionPhotoSourceCamera": "Kamera",
+  "sessionPhotoSourceGallery": "Galerie",
+  "sessionFinalCountLabel": "Endstand",
+  "sessionCountDecreaseTooltip": "Zigi entfernen",
+  "sessionCountIncreaseTooltip": "Zigi hinzufügen",
+  "sessionInactivityTitle": "Noch am Sammeln?",
+  "sessionInactivityBody": "Dein Cleanup war zwei Stunden lang inaktiv. M\u00f6chtest du ihn jetzt abschliessen?",
+  "sessionInactivityContinue": "Weiter sammeln",
+  "sessionInactivityEnd": "Lauf beenden",
+  "notificationSessionCheckTitle": "Noch am Sammeln?",
+  "notificationSessionCheckBody": "Dein Cleanup ist noch offen. Tippe hier, um ihn fortzusetzen."
+}

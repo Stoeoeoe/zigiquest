@@ -27,6 +27,7 @@ import '../core/services/location_service.dart';
 import '../core/services/profile_service.dart';
 import '../core/services/progression.dart';
 import '../core/services/session_photo_service.dart';
+import '../l10n/app_localizations.dart';
 import 'discover_content.dart';
 import 'visualization/zigi_pile.dart';
 

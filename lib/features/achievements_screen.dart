@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/services/achievements.dart';
+import '../l10n/app_localizations.dart';
 import 'screens.dart';
 
 class AchievementsScreen extends ConsumerWidget {
@@ -9,6 +10,7 @@ class AchievementsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final rows = ref.watch(entriesProvider).value ?? [];
     final sessions = ref.watch(sessionsProvider).value ?? [];
     final progress = achievementsFor(
@@ -21,7 +23,7 @@ class AchievementsScreen extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Erfolge')),
+      appBar: AppBar(title: Text(l10n.achievementsTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
         children: [
@@ -46,15 +48,15 @@ class AchievementsScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '$earned von ${progress.length} erreicht',
+                        l10n.achievementsCount(earned, progress.length),
                         style: Theme.of(
                           context,
                         ).textTheme.titleLarge?.copyWith(color: Colors.white),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Deine Erfolge werden direkt auf diesem Gerät berechnet.',
-                        style: TextStyle(color: Colors.white70),
+                      Text(
+                        l10n.achievementsDescription,
+                        style: const TextStyle(color: Colors.white70),
                       ),
                     ],
                   ),
@@ -64,7 +66,7 @@ class AchievementsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 22),
           Text(
-            'DEINE SAMMLUNG',
+            l10n.achievementsCollection,
             style: Theme.of(
               context,
             ).textTheme.labelLarge?.copyWith(letterSpacing: 1.1),
@@ -115,12 +117,12 @@ class _AchievementTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    progress.definition.title,
+                    progress.definition.title(context),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    progress.definition.description,
+                    progress.definition.description(context),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 10),

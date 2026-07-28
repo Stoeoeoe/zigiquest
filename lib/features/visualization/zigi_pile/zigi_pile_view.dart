@@ -9,6 +9,7 @@ class ZigiPileView extends StatefulWidget {
     this.persistenceKey,
     this.visualLimit = 100,
     this.effectsEnabled = true,
+    this.hapticsEnabled = true,
     this.staticPile = false,
     this.countLabel,
     this.onAdd,
@@ -16,7 +17,7 @@ class ZigiPileView extends StatefulWidget {
     super.key,
   });
   final int count, seed, visualLimit;
-  final bool reducedMotion, effectsEnabled, staticPile;
+  final bool reducedMotion, effectsEnabled, hapticsEnabled, staticPile;
   final String containerStyle;
   final String? persistenceKey, countLabel;
   final VoidCallback? onAdd, onRemove;
@@ -54,14 +55,22 @@ class _ZigiPileViewState extends State<ZigiPileView>
   void _add() {
     if (widget.onAdd == null) return;
     if (!widget.reducedMotion) _wobble.forward(from: 0);
+    if (widget.hapticsEnabled) HapticFeedback.lightImpact();
     widget.onAdd!();
+  }
+
+  void _remove() {
+    if (widget.onRemove == null || widget.count <= 0) return;
+    if (widget.hapticsEnabled) HapticFeedback.selectionClick();
+    widget.onRemove!();
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme,
         isStatic = widget.reducedMotion || widget.staticPile,
-        interactive = widget.onAdd != null;
+        interactive = widget.onAdd != null,
+        l10n = AppLocalizations.of(context)!;
     return RepaintBoundary(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -164,14 +173,12 @@ class _ZigiPileViewState extends State<ZigiPileView>
                         children: [
                           _PileControl(
                             icon: Icons.remove_rounded,
-                            tooltip: 'Eine Zigi entfernen',
-                            onPressed: widget.count > 0
-                                ? widget.onRemove
-                                : null,
+                            tooltip: l10n.vessel_remove_tooltip,
+                            onPressed: widget.count > 0 ? _remove : null,
                           ),
                           _PileControl(
                             icon: Icons.add_rounded,
-                            tooltip: 'Eine Zigi hinzufuegen',
+                            tooltip: l10n.vessel_add_tooltip,
                             onPressed: widget.onAdd == null ? null : _add,
                             primary: true,
                           ),
@@ -195,12 +202,12 @@ class _ZigiPileViewState extends State<ZigiPileView>
                             vertical: 5,
                           ),
                           child: Text(
-                            widget.countLabel ?? '${widget.count} IM GLAS',
+                            widget.countLabel ?? l10n.todayPileLabel(widget.count, widget.visualLimit),
                             style: Theme.of(context).textTheme.labelSmall
                                 ?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 1.1,
-                                ),
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.1,
+                            ),
                           ),
                         ),
                       ),
@@ -227,6 +234,7 @@ class _PileControl extends StatelessWidget {
   final String tooltip;
   final VoidCallback? onPressed;
   final bool primary;
+
   @override
   Widget build(BuildContext context) => Tooltip(
     message: tooltip,
@@ -240,6 +248,7 @@ class _VesselLayer extends StatelessWidget {
   const _VesselLayer({required this.asset, this.highQuality = false});
   final String asset;
   final bool highQuality;
+
   @override
   Widget build(BuildContext context) => Image.asset(
     asset,

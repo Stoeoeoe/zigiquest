@@ -6,7 +6,15 @@ class TodayScreen extends ConsumerWidget {
   const TodayScreen({super.key});
 
   @override
+  Widget build(BuildContext context, WidgetRef ref) => const _TodayBody();
+}
+
+class _TodayBody extends ConsumerWidget {
+  const _TodayBody();
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final rows = ref.watch(entriesProvider).value ?? const <DailyEntry>[];
     final today =
         rows.where((row) => row.dateKey == dayKey()).firstOrNull?.count ?? 0;
@@ -28,7 +36,7 @@ class TodayScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'ZigiQuest',
+                        l10n.todayTitle,
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                     ),
@@ -41,7 +49,7 @@ class TodayScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  DateFormat('EEEE, d. MMMM', 'de_CH').format(DateTime.now()),
+                  DateFormat('EEEE, d. MMMM', Localizations.localeOf(context).toString()).format(DateTime.now()),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
@@ -55,15 +63,15 @@ class TodayScreen extends ConsumerWidget {
                   icon: const Icon(Icons.cleaning_services_rounded),
                   label: Text(
                     activeSession == null
-                        ? 'CLEANUP-RUNDE STARTEN'
-                        : 'CLEANUP FORTSETZEN',
+                        ? l10n.todayCleanupStart
+                        : l10n.todayCleanupContinue,
                     style: const TextStyle(letterSpacing: 1.1),
                   ),
                 ),
                 if (activeSession == null) ...[
                   const SizedBox(height: 6),
                   Text(
-                    'Für bewusste Runden mit Zeit, optionalem Ort und Foto.',
+                    l10n.todayCleanupDescription,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
@@ -73,7 +81,7 @@ class TodayScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 Semantics(
                   liveRegion: true,
-                  label: '$today Zigis heute gesammelt',
+                  label: l10n.todayCountSemantics(today),
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(14, 16, 14, 18),
                     decoration: BoxDecoration(
@@ -93,7 +101,7 @@ class TodayScreen extends ConsumerWidget {
                     child: Column(
                       children: [
                         Text(
-                          'SCHNELL ERFASSEN',
+                          l10n.todayQuickLog,
                           style: Theme.of(context).textTheme.labelMedium
                               ?.copyWith(
                                 letterSpacing: 1.2,
@@ -103,7 +111,7 @@ class TodayScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Tippe das Glas für einzelne Funde.',
+                          l10n.todayQuickLogDescription,
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(color: colors.onSurfaceVariant),
                         ),
@@ -122,7 +130,7 @@ class TodayScreen extends ConsumerWidget {
                                 left: 8,
                               ),
                               child: Text(
-                                'ZIGIS HEUTE',
+                                l10n.todayCountLabel,
                                 style: Theme.of(context).textTheme.labelMedium
                                     ?.copyWith(
                                       letterSpacing: 1.4,
@@ -131,7 +139,7 @@ class TodayScreen extends ConsumerWidget {
                               ),
                             ),
                             IconButton(
-                              tooltip: 'Anzahl korrigieren',
+                              tooltip: l10n.todayEditCount,
                               onPressed: () => _editCount(context, ref, today),
                               icon: const Icon(Icons.edit_rounded),
                             ),
@@ -141,8 +149,7 @@ class TodayScreen extends ConsumerWidget {
                           height: 330,
                           child: ZigiPileView(
                             count: activeJarCount,
-                            countLabel:
-                                '$activeJarCount / $_zigisPerJar IM AKTUELLEN GLAS',
+                            countLabel: l10n.todayPileLabel(activeJarCount, _zigisPerJar),
                             reducedMotion: settings?.reducedMotion ?? false,
                             containerStyle:
                                 settings?.containerStyle ?? 'glass_jar',
@@ -150,20 +157,17 @@ class TodayScreen extends ConsumerWidget {
                             persistenceKey: 'today_pile_50_v1',
                             effectsEnabled:
                                 settings?.environmentEffectsEnabled ?? true,
+                            hapticsEnabled:
+                                settings?.hapticsEnabled ?? true,
                             onAdd: () async {
                               final next = today + 1;
                               await ref
                                   .read(repositoryProvider)
                                   .change(DateTime.now(), 1);
-                              if (settings?.hapticsEnabled ?? true) {
-                                HapticFeedback.lightImpact();
-                              }
                               if (next % _zigisPerJar == 0 && context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Glas gefüllt! Ein leeres Glas ist bereit.',
-                                    ),
+                                  SnackBar(
+                                    content: Text(l10n.todayGlassFilled),
                                   ),
                                 );
                               }
@@ -180,9 +184,7 @@ class TodayScreen extends ConsumerWidget {
                               Icons.celebration,
                               size: 18,
                             ),
-                            label: Text(
-                              '$completedJars ${completedJars == 1 ? 'Glas' : 'Gläser'} gefüllt',
-                            ),
+                            label: Text(l10n.todayJarsFilled(completedJars)),
                           ),
                         ],
                       ],
@@ -202,29 +204,30 @@ class TodayScreen extends ConsumerWidget {
     WidgetRef ref,
     int current,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: '$current');
     final value = await showDialog<int>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Zigis von heute korrigieren'),
+        title: Text(l10n.todayEditTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Anzahl',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.amountLabel,
+            border: const OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Abbrechen'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () =>
                 Navigator.pop(context, int.tryParse(controller.text.trim())),
-            child: const Text('Speichern'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -266,7 +269,7 @@ class _HeaderProfileButton extends StatelessWidget {
   final VoidCallback onPressed;
   @override
   Widget build(BuildContext context) => IconButton.filledTonal(
-    tooltip: 'Profil',
+    tooltip: AppLocalizations.of(context)!.todayProfileTooltip,
     onPressed: onPressed,
     icon: CircleAvatar(
       radius: 16,

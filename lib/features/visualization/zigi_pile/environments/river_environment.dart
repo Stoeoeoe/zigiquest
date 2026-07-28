@@ -3,7 +3,7 @@ part of '../../zigi_pile.dart';
 class RiverEnvironment implements Environment {
   const RiverEnvironment();
   @override
-  String get label => 'Flussufer';
+  String label(BuildContext context) => AppLocalizations.of(context)!.vessel_river_label;
   @override
   String get sceneAsset => 'assets/scenes/riverside.png';
   @override

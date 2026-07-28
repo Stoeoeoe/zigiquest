@@ -3,7 +3,7 @@ part of '../../zigi_pile.dart';
 class CityEnvironment implements Environment {
   const CityEnvironment();
   @override
-  String get label => 'Schweizer Stadt';
+  String label(BuildContext context) => AppLocalizations.of(context)!.vessel_city_label;
   @override
   String get sceneAsset => 'assets/scenes/swiss_city.png';
   @override

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/services/auth_service.dart';
 import '../core/services/community_service.dart';
+import '../l10n/app_localizations.dart';
 
 class CommunityScreen extends ConsumerStatefulWidget {
   const CommunityScreen({super.key});
@@ -48,24 +49,23 @@ class _CommunityScreenState extends ConsumerState<CommunityScreen> {
   Future<void> _setOptIn(bool value) async {
     final user = ref.read(authUserProvider).value;
     if (user == null) return;
+    final l10n = AppLocalizations.of(context)!;
     if (value) {
       final accepted =
           await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
               icon: const Icon(Icons.visibility_rounded),
-              title: const Text('Im Ranking erscheinen?'),
-              content: const Text(
-                'Dein Nickname, Avatar und dein Wochenwert werden für andere angemeldete Nutzer sichtbar. E-Mail, Fotos und Standorte bleiben privat.',
-              ),
+              title: Text(l10n.communityOptInTitle),
+              content: Text(l10n.communityOptInDescription),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Nicht jetzt'),
+                  child: Text(l10n.communityOptInNegative),
                 ),
                 FilledButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Teilnehmen'),
+                  child: Text(l10n.communityOptInPositive),
                 ),
               ],
             ),
@@ -86,10 +86,8 @@ class _CommunityScreenState extends ConsumerState<CommunityScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Community-Einstellung konnte nicht gespeichert werden.',
-            ),
+          SnackBar(
+            content: Text(l10n.communitySaveError),
           ),
         );
       }
@@ -102,9 +100,10 @@ class _CommunityScreenState extends ConsumerState<CommunityScreen> {
   Widget build(BuildContext context) {
     final user = ref.watch(authUserProvider).value;
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Community')),
+        appBar: AppBar(title: Text(l10n.communityTitle)),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(28),
@@ -114,12 +113,12 @@ class _CommunityScreenState extends ConsumerState<CommunityScreen> {
                 Icon(Icons.groups_rounded, size: 56, color: colors.primary),
                 const SizedBox(height: 16),
                 Text(
-                  'Gemeinsam zählt mehr.',
+                  l10n.communityHeroTitle,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Melde dich an, um beim gemeinsamen Ziel mitzumachen oder das Wochenranking zu sehen.',
+                Text(
+                  l10n.communityHeroBody,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -130,10 +129,10 @@ class _CommunityScreenState extends ConsumerState<CommunityScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Community'),
+        title: Text(l10n.communityTitle),
         actions: [
           IconButton(
-            tooltip: 'Aktualisieren',
+            tooltip: l10n.communityRefresh,
             onPressed: _loading ? null : _reload,
             icon: const Icon(Icons.refresh_rounded),
           ),
@@ -155,17 +154,15 @@ class _CommunityScreenState extends ConsumerState<CommunityScreen> {
               Card(
                 child: SwitchListTile(
                   secondary: const Icon(Icons.emoji_events_rounded),
-                  title: const Text('Im Wochenranking erscheinen'),
-                  subtitle: const Text(
-                    'Optional: nur Nickname, Avatar und Wochenwert werden gezeigt.',
-                  ),
+                  title: Text(l10n.communityOptInLabel),
+                  subtitle: Text(l10n.communityOptInSublabel),
                   value: _optedIn,
                   onChanged: _saving ? null : _setOptIn,
                 ),
               ),
               const SizedBox(height: 18),
               Text(
-                'DIESE WOCHE',
+                l10n.communityWeeklyLabel,
                 style: Theme.of(
                   context,
                 ).textTheme.labelLarge?.copyWith(letterSpacing: 1.1),
@@ -173,20 +170,16 @@ class _CommunityScreenState extends ConsumerState<CommunityScreen> {
               const SizedBox(height: 8),
               if (!_optedIn)
                 Card(
-                  child: const Padding(
-                    padding: EdgeInsets.all(18),
-                    child: Text(
-                      'Das Ranking bleibt privat, bis du freiwillig teilnimmst.',
-                    ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Text(l10n.communityPrivateMessage),
                   ),
                 )
               else if (_leaders.isEmpty)
                 Card(
-                  child: const Padding(
-                    padding: EdgeInsets.all(18),
-                    child: Text(
-                      'Noch keine sichtbaren Wochenwerte. Du kannst den Anfang machen.',
-                    ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Text(l10n.communityEmptyLeaderboard),
                   ),
                 )
               else
@@ -215,7 +208,7 @@ class _CommunityScreenState extends ConsumerState<CommunityScreen> {
                 ),
               const SizedBox(height: 12),
               Text(
-                'Lokale, nicht synchronisierte Einträge bleiben immer privat und zählen erst nach erfolgreicher Synchronisierung mit.',
+                l10n.communitySyncNote,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
@@ -235,13 +228,12 @@ class _GoalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     if (snapshot == null) {
       return Card(
-        child: const Padding(
-          padding: EdgeInsets.all(18),
-          child: Text(
-            'Das gemeinsame Cleanup-Ziel wird gerade eingerichtet. Schau bald wieder vorbei.',
-          ),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Text(l10n.communityGoalEmpty),
         ),
       );
     }
@@ -257,7 +249,7 @@ class _GoalCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'GEMEINSAMES ZIEL',
+            l10n.communityGoalLabel,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w900,
               letterSpacing: 1.1,

@@ -4,16 +4,17 @@ class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authUserProvider).value;
     final entries = ref.watch(entriesProvider).value ?? const <DailyEntry>[];
     final sessions =
         ref.watch(sessionsProvider).value ?? const <CleanupSession>[];
     final total = entries.fold<int>(0, (sum, row) => sum + row.count);
     final signedName = user == null
-        ? 'Gast'
+        ? l10n.profileGuest
         : (ref.watch(profileDisplayNameProvider(user.id)).value ??
               user.userMetadata?['full_name'] as String? ??
-              'ZigiQuest Mitglied');
+              l10n.profileMember);
     final achievementCount = achievementsFor(
       total: total,
       streak: collectionStreak(entries),
@@ -21,7 +22,7 @@ class ProfileScreen extends ConsumerWidget {
       week: weekTotal(entries),
     ).where((it) => it.unlocked).length;
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil')),
+      appBar: AppBar(title: Text(l10n.profileTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
         children: [
@@ -53,14 +54,14 @@ class ProfileScreen extends ConsumerWidget {
                         Text(
                           user == null
                               ? 'Lokal auf diesem Gerät'
-                              : (user.email ?? 'Angemeldet'),
+                              : (user.email ?? l10n.profileEmailDefault),
                         ),
                       ],
                     ),
                   ),
                   if (user != null)
                     IconButton(
-                      tooltip: 'Name ändern',
+                      tooltip: l10n.profileEditNameTooltip,
                       onPressed: () =>
                           _editName(context, ref, user.id, signedName),
                       icon: const Icon(Icons.edit_outlined),
@@ -73,20 +74,20 @@ class ProfileScreen extends ConsumerWidget {
           Row(
             children: [
               Expanded(
-                child: _ProfileMetric(value: '$total', label: 'Zigis'),
+                child: _ProfileMetric(value: '$total', label: l10n.profileMetricZigis),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _ProfileMetric(
                   value: '${collectionStreak(entries)}',
-                  label: 'Tage-Serie',
+                  label: l10n.profileMetricStreak,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _ProfileMetric(
                   value: '$achievementCount',
-                  label: 'Badges',
+                  label: l10n.profileMetricBadges,
                 ),
               ),
             ],
@@ -97,15 +98,15 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 ListTile(
                   leading: const Icon(Icons.emoji_events_outlined),
-                  title: const Text('Erfolge'),
-                  subtitle: const Text('Deine Meilensteine'),
+                  title: Text(l10n.profileAchievements),
+                  subtitle: Text(l10n.profileAchievementsSubtitle),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/achievements'),
                 ),
                 ListTile(
                   leading: const Icon(Icons.groups_outlined),
-                  title: const Text('Community'),
-                  subtitle: const Text('Gemeinsam Wirkung sichtbar machen'),
+                  title: Text(l10n.profileCommunity),
+                  subtitle: Text(l10n.profileCommunitySubtitle),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/community'),
                 ),
@@ -121,7 +122,7 @@ class ProfileScreen extends ConsumerWidget {
                 ref.invalidate(guestModeProvider);
               },
               icon: const Icon(Icons.logout_rounded),
-              label: const Text('Abmelden'),
+              label: Text(l10n.profileSignOut),
             ),
           ],
         ],
@@ -135,11 +136,12 @@ class ProfileScreen extends ConsumerWidget {
     String id,
     String current,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: current);
     final value = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Anzeigename'),
+        title: Text(l10n.profileEditNameTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -148,11 +150,11 @@ class ProfileScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Abbrechen'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Speichern'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -166,8 +168,8 @@ class ProfileScreen extends ConsumerWidget {
     } catch (_) {
       if (context.mounted)
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Name konnte nicht gespeichert werden.'),
+          SnackBar(
+            content: Text(l10n.profileSaveError),
           ),
         );
     }

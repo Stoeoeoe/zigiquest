@@ -9,6 +9,7 @@ const containerStyles = <String, Environment>{
 Environment _environmentOf(String key) =>
     containerStyles[key] ?? containerStyles['glass_jar']!;
 String sceneAssetFor(String style) => _environmentOf(style).sceneAsset;
-Map<String, String> get containerStyleLabels => {
-  for (final entry in containerStyles.entries) entry.key: entry.value.label,
+
+Map<String, String> containerStyleLabels(BuildContext context) => {
+  for (final entry in containerStyles.entries) entry.key: entry.value.label(context),
 };

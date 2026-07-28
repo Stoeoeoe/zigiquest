@@ -54,6 +54,7 @@ class AppPreferences extends Table {
   IntColumn get pileLimit => integer().withDefault(const Constant(100))();
   BoolColumn get environmentEffectsEnabled =>
       boolean().withDefault(const Constant(true))();
+  TextColumn get locale => text().withDefault(const Constant('en'))();
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -124,7 +125,7 @@ class AppDatabase extends _$AppDatabase {
     }),
   );
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (migrator, from, to) async {
@@ -136,6 +137,9 @@ class AppDatabase extends _$AppDatabase {
           appPreferences,
           appPreferences.environmentEffectsEnabled,
         );
+      }
+      if (from < 4) {
+        await migrator.addColumn(appPreferences, appPreferences.locale);
       }
     },
   );
@@ -172,6 +176,7 @@ class AppDatabase extends _$AppDatabase {
               userSeed: 7319,
               pileLimit: 100,
               environmentEffectsEnabled: true,
+              locale: 'en',
             ),
       );
 }

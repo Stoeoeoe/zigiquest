@@ -22,6 +22,7 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
   bool _ratingEligible = false;
   bool _recovering = false;
   bool _isPickingPhoto = false;
+  bool _showingInactivityDialog = false;
 
   @override
   void initState() {
@@ -57,13 +58,13 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
         ).finalizeActive(active, endedAt: active.expiresAt);
         await ref.read(activeSessionStoreProvider).clear();
         ref.invalidate(activeSessionProvider);
-        await NotificationService.instance.showSessionExpired();
-        if (mounted)
+        if (mounted) {
           setState(() {
             _count = active.count;
             _elapsed = active.expiresAt.difference(active.startedAt);
             _stage = _SessionStage.saved;
           });
+        }
         return;
       }
       if (!mounted) return;
@@ -75,6 +76,11 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
         _stage = _SessionStage.active;
       });
       _startClock();
+      if (active.isInactivityPromptDue) {
+        unawaited(_showInactivityPrompt());
+      } else {
+        _recordInteraction();
+      }
     } finally {
       _recovering = false;
     }
@@ -91,6 +97,7 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
   }
 
   Future<void> _start(String tracking) async {
+    final l10n = AppLocalizations.of(context)!;
     if (tracking != 'none') {
       final tracker = SessionLocationTracker(
         LocationService(),
@@ -104,22 +111,16 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
         _location = tracker;
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Standort ist nicht verf\u00fcgbar. Die Session startet ohne Tracking.',
-            ),
+          SnackBar(
+            content: Text(l10n.sessionLocationStatusError),
           ),
         );
       }
     }
     if (!mounted) return;
-    final settings = await ref.read(engagementPreferencesProvider).load();
     final active = await ref
         .read(activeSessionStoreProvider)
-        .create(
-          tracking: _location == null ? 'none' : tracking,
-          timeout: settings.timeout,
-        );
+        .create(tracking: _location == null ? 'none' : tracking);
     ref.invalidate(activeSessionProvider);
     unawaited(ref.read(reminderCoordinatorProvider).refresh());
     if (!mounted) return;
@@ -133,7 +134,52 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
     _startClock();
   }
 
+  void _recordInteraction({int? count}) {
+    final active = _active;
+    if (active == null) return;
+    final updated = active.interacted(count: count);
+    _active = updated;
+    unawaited(
+      ref.read(activeSessionStoreProvider).saveWithInactivitySchedule(updated),
+    );
+    ref.invalidate(activeSessionProvider);
+  }
+
+  Future<void> _showInactivityPrompt() async {
+    if (!mounted || _showingInactivityDialog || _stage != _SessionStage.active) {
+      return;
+    }
+    _showingInactivityDialog = true;
+    final l10n = AppLocalizations.of(context)!;
+    final shouldFinish = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.timer_outlined),
+        title: const Text('Noch am Sammeln?'),
+        content: const Text('Dein Cleanup war zwei Stunden lang inaktiv. Möchtest du ihn jetzt abschliessen?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Weiter sammeln'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Lauf beenden'),
+          ),
+        ],
+      ),
+    );
+    _showingInactivityDialog = false;
+    if (!mounted) return;
+    if (shouldFinish == true) {
+      await _finish();
+    } else {
+      _recordInteraction();
+    }
+  }
   void _changeCount(int delta) {
+    final l10n = AppLocalizations.of(context)!;
     final candidate = _count + delta;
     final next = candidate < 0 ? 0 : candidate;
     setState(() => _count = next);
@@ -145,36 +191,35 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
     }
     if (delta > 0 && next > 0 && next % _zigisPerJar == 0 && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Glas gefüllt! Ein neues leeres Glas ist bereit.'),
+        SnackBar(
+          content: Text(l10n.sessionJarFull),
         ),
       );
     }
   }
 
   Future<SessionPhotoDraft?> _askForCompletionPhoto() async {
+    final l10n = AppLocalizations.of(context)!;
     final source = await showDialog<ImageSource>(
       context: context,
       builder: (context) => AlertDialog(
         icon: const Icon(Icons.camera_alt_outlined),
-        title: const Text('Abschlussfoto'),
-        content: const Text(
-          'Optional: Halte das Ergebnis deiner Cleanup-Runde fest. Du kannst die Runde auch ohne Foto speichern.',
-        ),
+        title: Text(l10n.historyPhotoAfter),
+        content: Text(l10n.sessionStartHint),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Ohne Foto'),
+            child: Text(l10n.sessionFinishingPhotoNone),
           ),
           TextButton.icon(
             onPressed: () => Navigator.pop(context, ImageSource.gallery),
             icon: const Icon(Icons.photo_library_outlined),
-            label: const Text('Galerie'),
+            label: Text(l10n.sessionPhotoSourceGallery),
           ),
           FilledButton.icon(
             onPressed: () => Navigator.pop(context, ImageSource.camera),
             icon: const Icon(Icons.camera_alt_outlined),
-            label: const Text('Kamera'),
+            label: Text(l10n.sessionPhotoSourceCamera),
           ),
         ],
       ),
@@ -189,8 +234,8 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Foto konnte nicht verarbeitet werden.'),
+          SnackBar(
+            content: Text(l10n.remotePhotosPreviewError),
           ),
         );
       }
@@ -329,6 +374,7 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
         distance: _snapshot?.distanceMeters ?? 0,
         reducedMotion: reducedMotion,
         effectsEnabled: effectsEnabled,
+        hapticsEnabled: settings?.hapticsEnabled ?? true,
         containerStyle: settings?.containerStyle ?? 'glass_jar',
         seed: settings?.userSeed ?? 7319,
         persistenceKey: _active == null ? null : 'cleanup_${_active!.id}',
@@ -356,55 +402,58 @@ class _TrackingChoice extends StatelessWidget {
   const _TrackingChoice({required this.onChoose});
   final ValueChanged<String> onChoose;
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(),
-    body: SafeArea(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Icon(Icons.cleaning_services_rounded, size: 58),
-                const SizedBox(height: 18),
-                Text(
-                  'Cleanup-Runde starten',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'W\u00e4hle, ob diese Runde einen Standort oder eine Route speichern darf.',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 28),
-                FilledButton.icon(
-                  onPressed: () => onChoose('none'),
-                  icon: const Icon(Icons.location_off_rounded),
-                  label: const Text('Runde ohne Standort starten'),
-                ),
-                const SizedBox(height: 10),
-                OutlinedButton.icon(
-                  onPressed: () => onChoose('point'),
-                  icon: const Icon(Icons.my_location_rounded),
-                  label: const Text('Standortpunkt speichern'),
-                ),
-                const SizedBox(height: 10),
-                OutlinedButton.icon(
-                  onPressed: () => onChoose('route'),
-                  icon: const Icon(Icons.route_rounded),
-                  label: const Text('Route aufzeichnen'),
-                ),
-              ],
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Icon(Icons.cleaning_services_rounded, size: 58),
+                  const SizedBox(height: 18),
+                  Text(
+                    l10n.sessionStartTitle,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.sessionStartHint,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28),
+                  FilledButton.icon(
+                    onPressed: () => onChoose('none'),
+                    icon: const Icon(Icons.location_off_rounded),
+                    label: Text(l10n.sessionNoLocation),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    onPressed: () => onChoose('point'),
+                    icon: const Icon(Icons.my_location_rounded),
+                    label: Text(l10n.sessionLocationPoint),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    onPressed: () => onChoose('route'),
+                    icon: const Icon(Icons.route_rounded),
+                    label: Text(l10n.sessionRoute),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _ActiveSession extends StatelessWidget {
@@ -415,6 +464,7 @@ class _ActiveSession extends StatelessWidget {
     required this.distance,
     required this.reducedMotion,
     required this.effectsEnabled,
+    required this.hapticsEnabled,
     required this.containerStyle,
     required this.seed,
     required this.persistenceKey,
@@ -428,6 +478,7 @@ class _ActiveSession extends StatelessWidget {
   final double distance;
   final bool reducedMotion;
   final bool effectsEnabled;
+  final bool hapticsEnabled;
   final String containerStyle;
   final int seed;
   final String? persistenceKey;
@@ -436,10 +487,10 @@ class _ActiveSession extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colors = Theme.of(context).colorScheme;
     final hint = DiscoverCard.forDay(DateTime.now());
     final activeJarCount = count % _zigisPerJar;
-    final completedJars = count ~/ _zigisPerJar;
     return Scaffold(
       body: Stack(
         children: [
@@ -453,10 +504,10 @@ class _ActiveSession extends StatelessWidget {
                     children: [
                       Tooltip(
                         message: tracking == 'none'
-                            ? 'Ohne Tracking'
+                            ? l10n.sessionTrackingStatusNone
                             : tracking == 'point'
-                            ? 'Standortpunkt'
-                            : 'Route wird aufgezeichnet',
+                            ? l10n.sessionTrackingStatusPoint
+                            : l10n.sessionTrackingStatusRoute,
                         child: Icon(
                           tracking == 'none'
                               ? Icons.location_off_rounded
@@ -467,16 +518,16 @@ class _ActiveSession extends StatelessWidget {
                         ),
                       ),
                       if (tracking == 'none') ...[
-                        const Text(
-                          'Ohne Tracking',
-                          style: TextStyle(fontSize: 11),
+                        Text(
+                          l10n.sessionTrackingStatusNone,
+                          style: const TextStyle(fontSize: 11),
                         ),
                         const SizedBox(width: 8),
                       ] else
                         const SizedBox(width: 9),
                       Expanded(
                         child: Text(
-                          'CLEANUP L\u00c4UFT',
+                          l10n.sessionActiveTitle,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.labelLarge
                               ?.copyWith(
@@ -512,7 +563,7 @@ class _ActiveSession extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            hint.title,
+                            hint.title(context),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.labelMedium
@@ -526,20 +577,19 @@ class _ActiveSession extends StatelessWidget {
                   Expanded(
                     child: Semantics(
                       button: true,
-                      label:
-                          'Gef\u00e4\u00df antippen, um eine Zigi hinzuzuf\u00fcgen',
+                      label: l10n.sessionActiveAddSemantic,
                       child: Center(
                         child: AspectRatio(
                           aspectRatio: 1,
                           child: ZigiPileView(
                             count: activeJarCount,
-                            countLabel:
-                                '$activeJarCount / $_zigisPerJar IM AKTUELLEN GLAS',
+                            countLabel: l10n.todayPileLabel(activeJarCount, _zigisPerJar),
                             reducedMotion: reducedMotion,
                             containerStyle: containerStyle,
                             seed: seed,
                             persistenceKey: persistenceKey,
                             effectsEnabled: effectsEnabled,
+                            hapticsEnabled: hapticsEnabled,
                             onAdd: () => onChange(1),
                             onRemove: count == 0 ? null : () => onChange(-1),
                           ),
@@ -547,15 +597,6 @@ class _ActiveSession extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (completedJars > 0) ...[
-                    const SizedBox(height: 6),
-                    Chip(
-                      avatar: const Icon(Icons.wine_bar_rounded, size: 18),
-                      label: Text(
-                        '$completedJars ${completedJars == 1 ? 'Glas' : 'Gläser'} gefüllt',
-                      ),
-                    ),
-                  ],
                   const SizedBox(height: 10),
                   FilledButton.icon(
                     onPressed: onFinish,
@@ -563,7 +604,7 @@ class _ActiveSession extends StatelessWidget {
                       minimumSize: const Size.fromHeight(56),
                     ),
                     icon: const Icon(Icons.flag_rounded),
-                    label: const Text('SESSION ABSCHLIESSEN'),
+                    label: Text(l10n.sessionComplete),
                   ),
                 ],
               ),
@@ -617,99 +658,102 @@ class _FinishSession extends StatelessWidget {
   bool get hasPhoto => photo != null;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Cleanup geschafft!')),
-    body: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(22),
-                child: Column(
-                  children: [
-                    Text(
-                      '$count',
-                      style: Theme.of(context).textTheme.displayLarge,
-                    ),
-                    const Text('ZIGIS GESAMMELT'),
-                    const SizedBox(height: 12),
-                    Text(_duration(elapsed)),
-                    const Divider(height: 28),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton.outlined(
-                          onPressed: count > 0 ? () => onChange(-1) : null,
-                          icon: const Icon(Icons.remove),
-                          tooltip: 'Eine Zigi weniger',
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 14),
-                          child: Text('Finaler Zähler'),
-                        ),
-                        IconButton.outlined(
-                          onPressed: () => onChange(1),
-                          icon: const Icon(Icons.add),
-                          tooltip: 'Eine Zigi mehr',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 14),
-            OutlinedButton.icon(
-              onPressed: () => onAddPhoto(),
-              icon: Icon(
-                hasPhoto
-                    ? Icons.photo_camera_back_outlined
-                    : Icons.camera_alt_outlined,
-              ),
-              label: Text(
-                hasPhoto
-                    ? 'Abschlussfoto ändern'
-                    : 'Optionales Abschlussfoto hinzufügen',
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              hasPhoto
-                  ? '1 Abschlussfoto bereit zum Speichern'
-                  : 'Kein Foto ausgewählt',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            if (photo != null) ...[
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.file(
-                  photo!.processed.file,
-                  height: 148,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => const SizedBox(
-                    height: 96,
-                    child: Center(child: Text('Vorschau nicht verfügbar.')),
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.sessionFinishTitle)),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(22),
+                  child: Column(
+                    children: [
+                      Text(
+                        '$count',
+                        style: Theme.of(context).textTheme.displayLarge,
+                      ),
+                      Text(l10n.sessionFinishingMetricZigis),
+                      const SizedBox(height: 12),
+                      Text(_duration(elapsed)),
+                      const Divider(height: 28),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton.outlined(
+                            onPressed: count > 0 ? () => onChange(-1) : null,
+                            icon: const Icon(Icons.remove),
+                            tooltip: l10n.sessionCountDecreaseTooltip,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            child: Text(l10n.sessionFinalCountLabel),
+                          ),
+                          IconButton.outlined(
+                            onPressed: () => onChange(1),
+                            icon: const Icon(Icons.add),
+                            tooltip: l10n.sessionCountIncreaseTooltip,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
+              const SizedBox(height: 14),
+              OutlinedButton.icon(
+                onPressed: () => onAddPhoto(),
+                icon: Icon(
+                  hasPhoto
+                      ? Icons.photo_camera_back_outlined
+                      : Icons.camera_alt_outlined,
+                ),
+                label: Text(
+                  hasPhoto
+                      ? l10n.sessionFinishingPhotoChange
+                      : l10n.sessionFinishingPhotoAdd,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                hasPhoto
+                    ? l10n.sessionFinishingPhotoReady
+                    : l10n.sessionFinishingPhotoNone,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              if (photo != null) ...[
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.file(
+                    photo!.processed.file,
+                    height: 148,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => SizedBox(
+                      height: 96,
+                      child: Center(child: Text(l10n.sessionFinishingPreviewError)),
+                    ),
+                  ),
+                ),
+              ],
+              const Spacer(),
+              FilledButton.icon(
+                onPressed: onSave,
+                icon: const Icon(Icons.save_rounded),
+                label: Text(l10n.sessionSave),
+              ),
             ],
-            const Spacer(),
-            FilledButton.icon(
-              onPressed: onSave,
-              icon: const Icon(Icons.save_rounded),
-              label: const Text('Cleanup speichern'),
-            ),
-          ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _SavedSession extends StatelessWidget {
@@ -724,6 +768,7 @@ class _SavedSession extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final xp = count == 0 ? 0 : count + 10;
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
@@ -743,14 +788,14 @@ class _SavedSession extends StatelessWidget {
                         const Icon(Icons.celebration_rounded, size: 54),
                         const SizedBox(height: 14),
                         Text(
-                          'Cleanup geschafft!',
+                          l10n.sessionSavedTitle,
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         const SizedBox(height: 12),
-                        Text('$count Zigis in ${_duration(elapsed)}'),
+                        Text(l10n.sessionSavedSummary(count, _duration(elapsed))),
                         const SizedBox(height: 16),
                         Text(
-                          xp == 0 ? 'Keine XP' : '+$xp XP',
+                          xp == 0 ? l10n.sessionSavedXpNone : l10n.sessionSavedXp(xp),
                           style: Theme.of(context).textTheme.headlineMedium,
                         ),
                         const SizedBox(height: 20),
@@ -773,8 +818,8 @@ class _SavedSession extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   count == 0
-                                      ? 'Heute wurde nichts zum Glas hinzugefügt.'
-                                      : '$count ${count == 1 ? 'Zigi wurde' : 'Zigis wurden'} zu deinem Heute-Glas hinzugefügt.',
+                                      ? l10n.sessionSavedInventoryNone
+                                      : l10n.sessionSavedInventoryAdd(count),
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ),
@@ -789,7 +834,7 @@ class _SavedSession extends StatelessWidget {
                         FilledButton.icon(
                           onPressed: () => context.go('/'),
                           icon: const Icon(Icons.wb_sunny_rounded),
-                          label: const Text('Zur Startseite'),
+                          label: Text(l10n.sessionSavedGoHome),
                         ),
                       ],
                     ),
@@ -819,6 +864,7 @@ class _RatingBannerState extends State<_RatingBanner> {
   }
 
   Future<void> _requestReview() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _requesting = true);
     final shown = await RatingService().requestReview();
     if (!mounted) return;
@@ -831,10 +877,8 @@ class _RatingBannerState extends State<_RatingBanner> {
     }
     setState(() => _requesting = false);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Die Bewertungsanfrage ist auf diesem Gerät noch nicht verfuegbar.',
-        ),
+      SnackBar(
+        content: Text(l10n.sessionRatingError),
       ),
     );
   }
@@ -842,6 +886,7 @@ class _RatingBannerState extends State<_RatingBanner> {
   @override
   Widget build(BuildContext context) {
     if (_dismissed) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -851,9 +896,7 @@ class _RatingBannerState extends State<_RatingBanner> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Eine kleine Bitte \u2013 nur wenn ZigiQuest sie verdient hat.',
-          ),
+          Text(l10n.sessionRatingRequest),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -862,16 +905,16 @@ class _RatingBannerState extends State<_RatingBanner> {
               FilledButton.tonal(
                 onPressed: _requesting ? null : _requestReview,
                 child: Text(
-                  _requesting ? 'Einen Moment ...' : 'ZigiQuest bewerten',
+                  _requesting ? l10n.sessionRatingWaiting : l10n.sessionRatingPositive,
                 ),
               ),
               TextButton(
                 onPressed: () => _dismiss(RatingService().notNow),
-                child: const Text('Nicht jetzt'),
+                child: Text(l10n.sessionRatingNegative),
               ),
               TextButton(
                 onPressed: () => _dismiss(RatingService().never),
-                child: const Text('Nicht mehr fragen'),
+                child: Text(l10n.sessionRatingNever),
               ),
             ],
           ),

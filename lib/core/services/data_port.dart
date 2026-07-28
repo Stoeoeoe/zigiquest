@@ -52,18 +52,20 @@ class DataPort {
     final value = jsonDecode(raw);
     if (value is! Map<String, dynamic> ||
         value['version'] != 1 ||
-        value['daily_entries'] is! List)
+        value['daily_entries'] is! List) {
       throw const FormatException(
-        'Ungültiger oder nicht unterstützter ZigiQuest-Export.',
+        'Invalid or unsupported ZigiQuest export format.',
       );
+    }
     final parsed = <DailyEntriesCompanion>[];
     for (final item in value['daily_entries'] as List) {
       if (item is! Map ||
           item['date'] is! String ||
           item['count'] is! int ||
           (item['count'] as int) < 0 ||
-          DateTime.tryParse(item['date'] as String) == null)
-        throw const FormatException('Ungültiger Tageseintrag.');
+          DateTime.tryParse(item['date'] as String) == null) {
+        throw const FormatException('Invalid daily entry data.');
+      }
       final now = DateTime.now();
       parsed.add(
         DailyEntriesCompanion.insert(
@@ -76,8 +78,9 @@ class DataPort {
       );
     }
     await db.transaction(() async {
-      if (mode == ImportMergeMode.replaceAll)
+      if (mode == ImportMergeMode.replaceAll) {
         await db.delete(db.dailyEntries).go();
+      }
       for (final row in parsed) {
         final existing = await (db.select(
           db.dailyEntries,

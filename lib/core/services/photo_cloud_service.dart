@@ -78,7 +78,7 @@ class PhotoCloudService {
 
   Future<void> deleteRemotePhoto(RemoteSessionPhoto photo) async {
     final user = client?.auth.currentUser;
-    if (user == null || client == null) throw StateError('Nicht angemeldet');
+    if (user == null || client == null) throw StateError('User not signed in');
     await client!.storage.from('session-photos').remove([photo.storagePath]);
     await client!
         .from('session_photos')
@@ -92,7 +92,7 @@ class PhotoCloudService {
 
   Future<int> deleteRemoteBackups() async {
     final user = client?.auth.currentUser;
-    if (user == null || client == null) throw StateError('Nicht angemeldet');
+    if (user == null || client == null) throw StateError('User not signed in');
     final rows =
         await client!
                 .from('session_photos')
@@ -126,10 +126,10 @@ class PhotoCloudService {
     }
     final usage = await remoteUsageBytes() ?? 0;
     if (usage + photo.sizeBytes > cloudPhotoQuotaBytes) {
-      throw StateError('Das Cloud-Fotolimit von 25 MB ist erreicht.');
+      throw StateError('Cloud photo limit reached (25 MB)');
     }
     final file = File(photo.path);
-    if (!await file.exists()) throw StateError('Lokales Foto fehlt.');
+    if (!await file.exists()) throw StateError('Local photo file missing');
     final storagePath =
         'users/${user.id}/sessions/${photo.sessionId}/${photo.id}.jpg';
     await client!.storage

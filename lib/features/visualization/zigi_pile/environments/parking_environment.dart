@@ -2,10 +2,15 @@ part of '../../zigi_pile.dart';
 
 class ParkingEnvironment implements Environment {
   const ParkingEnvironment();
+
   @override
-  String get label => 'Parkplatz';
+  String label(BuildContext context) {
+    return AppLocalizations.of(context)!.vessel_parking_label;
+  }
+
   @override
   String get sceneAsset => 'assets/scenes/parking_lot.png';
+
   @override
   void paintEffect(Canvas canvas, Size size, double phase) {
     final c = Offset(size.width * .76, size.height * .21);

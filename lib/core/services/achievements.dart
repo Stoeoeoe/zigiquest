@@ -1,19 +1,50 @@
+import 'package:flutter/widgets.dart';
+import '../../l10n/app_localizations.dart';
+
 enum AchievementMetric { total, streak, sessions, week }
 
 class AchievementDefinition {
   const AchievementDefinition({
     required this.id,
-    required this.title,
-    required this.description,
     required this.metric,
     required this.target,
   });
 
   final String id;
-  final String title;
-  final String description;
   final AchievementMetric metric;
   final int target;
+
+  String title(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (id) {
+      'first_find' => l10n.achievement_first_find_title,
+      'ten_cleaner' => l10n.achievement_ten_cleaner_title,
+      'hundred_club' => l10n.achievement_hundred_club_title,
+      'thousand_impact' => l10n.achievement_thousand_impact_title,
+      'streak_three' => l10n.achievement_streak_three_title,
+      'streak_seven' => l10n.achievement_streak_seven_title,
+      'first_session' => l10n.achievement_first_session_title,
+      'ten_sessions' => l10n.achievement_ten_sessions_title,
+      'weekly_quest' => l10n.achievement_weekly_quest_title,
+      _ => id,
+    };
+  }
+
+  String description(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (id) {
+      'first_find' => l10n.achievement_first_find_description,
+      'ten_cleaner' => l10n.achievement_ten_cleaner_description,
+      'hundred_club' => l10n.achievement_hundred_club_description,
+      'thousand_impact' => l10n.achievement_thousand_impact_description,
+      'streak_three' => l10n.achievement_streak_three_description,
+      'streak_seven' => l10n.achievement_streak_seven_description,
+      'first_session' => l10n.achievement_first_session_description,
+      'ten_sessions' => l10n.achievement_ten_sessions_description,
+      'weekly_quest' => l10n.achievement_weekly_quest_description,
+      _ => '',
+    };
+  }
 }
 
 class AchievementProgress {
@@ -30,64 +61,46 @@ class AchievementProgress {
 const achievementDefinitions = <AchievementDefinition>[
   AchievementDefinition(
     id: 'first_find',
-    title: 'Erster Fund',
-    description: 'Sammle deine erste Zigi.',
     metric: AchievementMetric.total,
     target: 1,
   ),
   AchievementDefinition(
     id: 'ten_cleaner',
-    title: 'Saubere Zehn',
-    description: 'Sammle insgesamt 10 Zigis.',
     metric: AchievementMetric.total,
     target: 10,
   ),
   AchievementDefinition(
     id: 'hundred_club',
-    title: 'Hunderter-Club',
-    description: 'Sammle insgesamt 100 Zigis.',
     metric: AchievementMetric.total,
     target: 100,
   ),
   AchievementDefinition(
     id: 'thousand_impact',
-    title: 'Tausend Wirkung',
-    description: "Sammle insgesamt 1'000 Zigis.",
     metric: AchievementMetric.total,
     target: 1000,
   ),
   AchievementDefinition(
     id: 'streak_three',
-    title: 'Dranbleiben',
-    description: 'Sammle an drei Tagen in Folge.',
     metric: AchievementMetric.streak,
     target: 3,
   ),
   AchievementDefinition(
     id: 'streak_seven',
-    title: 'Wochenfeuer',
-    description: 'Sammle an sieben Tagen in Folge.',
     metric: AchievementMetric.streak,
     target: 7,
   ),
   AchievementDefinition(
     id: 'first_session',
-    title: 'Rausgegangen',
-    description: 'Schliesse deine erste Cleanup-Session ab.',
     metric: AchievementMetric.sessions,
     target: 1,
   ),
   AchievementDefinition(
     id: 'ten_sessions',
-    title: 'Cleanup-Routine',
-    description: 'Schliesse zehn Cleanup-Sessions ab.',
     metric: AchievementMetric.sessions,
     target: 10,
   ),
   AchievementDefinition(
     id: 'weekly_quest',
-    title: 'Wochenziel',
-    description: 'Sammle 75 Zigis in einer Woche.',
     metric: AchievementMetric.week,
     target: 75,
   ),

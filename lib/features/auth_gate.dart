@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/database/app_database.dart';
 import '../core/services/auth_service.dart';
+import '../l10n/app_localizations.dart';
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({required this.child, super.key});
@@ -37,15 +38,16 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   bool _showAccountChoice = false;
 
   Future<void> _signIn() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _working = true);
     try {
       await ref.read(authServiceProvider).signInWithGoogle();
     } on AuthConfigurationException {
       if (mounted) {
-        _message('Anmeldung ist auf diesem Build noch nicht konfiguriert.');
+        _message(l10n.authErrorConfig);
       }
     } catch (_) {
-      if (mounted) _message('Google-Anmeldung konnte nicht gestartet werden.');
+      if (mounted) _message(l10n.authErrorGoogle);
     } finally {
       if (mounted) setState(() => _working = false);
     }
@@ -64,6 +66,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (!_showAccountChoice) {
       return _HowItWorksScreen(
         onContinue: () => setState(() => _showAccountChoice = true),
@@ -110,14 +113,14 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      'Willkommen bei ZigiQuest',
+                      l10n.welcomeTitle,
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(fontWeight: FontWeight.w900),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Sammle Zigis, halte deinen Einsatz fest und mach deine Wirkung sichtbar.',
+                      l10n.welcomeSubtitle,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -125,19 +128,17 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                     ),
                     const SizedBox(height: 24),
                     Card(
-                      child: const Padding(
-                        padding: EdgeInsets.all(16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Wofür ist ein Konto da?',
-                              style: TextStyle(fontWeight: FontWeight.w800),
+                              l10n.welcomeAccountInfoTitle,
+                              style: const TextStyle(fontWeight: FontWeight.w800),
                             ),
-                            SizedBox(height: 6),
-                            Text(
-                              'Für private Sicherung und Synchronisierung zwischen Geräten. Session-Fotos können ebenfalls privat gesichert werden. Zählen, Cleanup-Runden und Verlauf funktionieren auch ohne Konto.',
-                            ),
+                            const SizedBox(height: 6),
+                            Text(l10n.welcomeAccountInfoBody),
                           ],
                         ),
                       ),
@@ -146,17 +147,17 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                     FilledButton.icon(
                       onPressed: _working ? null : _signIn,
                       icon: const Icon(Icons.login_rounded),
-                      label: const Text('Mit Google anmelden (optional)'),
+                      label: Text(l10n.welcomeGoogleSignIn),
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton.icon(
                       onPressed: _working ? null : _continueAsGuest,
                       icon: const Icon(Icons.person_outline_rounded),
-                      label: const Text('Ohne Konto fortfahren'),
+                      label: Text(l10n.welcomeContinueGuest),
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Danach richtest du die App ein. Der Gastmodus bleibt vollständig offline; ein Konto brauchst du nur für private Sicherung und Synchronisierung.',
+                      l10n.welcomeFooter,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -181,6 +182,7 @@ class _HowItWorksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: DecoratedBox(
         decoration: BoxDecoration(
@@ -206,45 +208,42 @@ class _HowItWorksScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 22),
                     Text(
-                      'So funktioniert ZigiQuest',
+                      l10n.howItWorksTitle,
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(fontWeight: FontWeight.w900),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Sammle in deinem Tempo – einzelne Funde sofort oder als bewusste Cleanup-Runde.',
+                      l10n.howItWorksSubtitle,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 28),
-                    const _HowItWorksStep(
+                    _HowItWorksStep(
                       icon: Icons.touch_app_rounded,
-                      title: 'Schnell erfassen',
-                      body:
-                          'Tippe auf das Glas, wenn du einzelne Zigis findest.',
+                      title: l10n.howItWorksQuickLogTitle,
+                      body: l10n.howItWorksQuickLogBody,
                     ),
                     const SizedBox(height: 12),
-                    const _HowItWorksStep(
+                    _HowItWorksStep(
                       icon: Icons.timer_outlined,
-                      title: 'Cleanup-Runde starten',
-                      body:
-                          'Halte Zeit, optionalen Standort und ein Foto zu einer bewussten Runde fest.',
+                      title: l10n.howItWorksSessionTitle,
+                      body: l10n.howItWorksSessionBody,
                     ),
                     const SizedBox(height: 12),
-                    const _HowItWorksStep(
+                    _HowItWorksStep(
                       icon: Icons.insights_rounded,
-                      title: 'Wirkung wiedersehen',
-                      body:
-                          'Dein Verlauf zeigt dir Tage und abgeschlossene Cleanup-Runden.',
+                      title: l10n.howItWorksHistoryTitle,
+                      body: l10n.howItWorksHistoryBody,
                     ),
                     const SizedBox(height: 30),
                     FilledButton.icon(
                       onPressed: onContinue,
                       icon: const Icon(Icons.arrow_forward_rounded),
-                      label: const Text('Weiter'),
+                      label: Text(l10n.continueLabel),
                     ),
                   ],
                 ),
@@ -335,8 +334,9 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final signedIn = ref.watch(authUserProvider).value != null;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Kurz einrichten')),
+      appBar: AppBar(title: Text(l10n.setupTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
@@ -353,18 +353,16 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                   Icon(Icons.tune_rounded, color: colors.onPrimaryContainer),
                   const SizedBox(height: 10),
                   Text(
-                    'Deine App, deine Regeln.',
+                    l10n.setupHeroTitle,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    'Du kannst alles später in den Einstellungen ändern. Standort bleibt immer aus, bis du ihn für eine Session aktiv wählst.',
-                  ),
+                  Text(l10n.setupHeroBody),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            Text('DARSTELLUNG', style: Theme.of(context).textTheme.labelLarge),
+            Text(l10n.setupCategoryAppearance, style: Theme.of(context).textTheme.labelLarge),
             Card(
               child: Column(
                 children: [
@@ -373,22 +371,22 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                     onChanged: (value) {
                       if (value != null) setState(() => _themeMode = value);
                     },
-                    child: const Column(
+                    child: Column(
                       children: [
                         RadioListTile(
                           value: 'system',
-                          title: Text('Systemeinstellungen'),
+                          title: Text(l10n.setupThemeSystem),
                         ),
-                        RadioListTile(value: 'light', title: Text('Hell')),
-                        RadioListTile(value: 'dark', title: Text('Dunkel')),
+                        RadioListTile(value: 'light', title: Text(l10n.setupThemeLight)),
+                        RadioListTile(value: 'dark', title: Text(l10n.setupThemeDark)),
                       ],
                     ),
                   ),
                   const Divider(height: 1),
                   SwitchListTile(
                     secondary: const Icon(Icons.motion_photos_off_rounded),
-                    title: const Text('Reduzierte Bewegung'),
-                    subtitle: const Text('Weniger Animationen im Gefäss.'),
+                    title: Text(l10n.setupReducedMotionTitle),
+                    subtitle: Text(l10n.setupReducedMotionBody),
                     value: _reducedMotion,
                     onChanged: (value) =>
                         setState(() => _reducedMotion = value),
@@ -397,38 +395,30 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Text('FEEDBACK', style: Theme.of(context).textTheme.labelLarge),
+            Text(l10n.setupCategoryFeedback, style: Theme.of(context).textTheme.labelLarge),
             Card(
               child: Column(
                 children: [
                   SwitchListTile(
                     secondary: const Icon(Icons.touch_app_rounded),
-                    title: const Text('Haptik'),
-                    subtitle: const Text('Leichte Rückmeldung beim Zählen.'),
+                    title: Text(l10n.setupHapticsTitle),
+                    subtitle: Text(l10n.setupHapticsBody),
                     value: _haptics,
                     onChanged: (value) => setState(() => _haptics = value),
                   ),
-                  // const Divider(height: 1),
-                  // SwitchListTile(
-                  //   secondary: const Icon(Icons.volume_up_rounded),
-                  //   title: const Text('Ton'),
-                  //   subtitle: const Text('Leise Soundeffekte beim Sammeln.'),
-                  //   value: _sound,
-                  //   onChanged: (value) => setState(() => _sound = value),
-                  // ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            Text('PRIVATSPHÄRE', style: Theme.of(context).textTheme.labelLarge),
+            Text(l10n.setupCategoryPrivacy, style: Theme.of(context).textTheme.labelLarge),
             Card(
               child: SwitchListTile(
                 secondary: const Icon(Icons.cloud_upload_rounded),
-                title: const Text('Private Cloud-Sicherung für Fotos'),
+                title: Text(l10n.setupCloudBackupTitle),
                 subtitle: Text(
                   signedIn
-                      ? 'Optional: hochgeladene Sessionfotos bleiben privat.'
-                      : 'Mit einem Konto verfügbar. Als Gast bleiben Fotos nur auf diesem Gerät.',
+                      ? l10n.setupCloudBackupBody
+                      : l10n.setupCloudBackupGuestBody,
                 ),
                 value: _cloudBackup,
                 onChanged: signedIn
@@ -440,7 +430,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             FilledButton.icon(
               onPressed: _saving ? null : _finish,
               icon: const Icon(Icons.arrow_forward_rounded),
-              label: const Text('Speichern und starten'),
+              label: Text(l10n.setupFinish),
             ),
           ],
         ),

@@ -12,31 +12,32 @@ class SettingsScreen extends ConsumerWidget {
       .insertOnConflictUpdate(update);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final settings = ref.watch(settingsProvider).value;
     final engagement = ref.watch(engagementSettingsProvider).value;
     final sync = ref.watch(syncStatusProvider).value;
     if (settings == null)
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     return Scaffold(
-      appBar: AppBar(title: const Text('Einstellungen')),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
         children: [
-          Text('DARSTELLUNG', style: Theme.of(context).textTheme.labelLarge),
+          Text(l10n.settingsCategoryAppearance, style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 8),
           Card(
             child: Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.palette_outlined),
-                  title: const Text('Erscheinungsbild'),
+                  title: Text(l10n.settingsThemeMode),
                   trailing: DropdownButton<String>(
                     value: settings.themeMode,
                     underline: const SizedBox.shrink(),
-                    items: const [
-                      DropdownMenuItem(value: 'system', child: Text('System')),
-                      DropdownMenuItem(value: 'light', child: Text('Hell')),
-                      DropdownMenuItem(value: 'dark', child: Text('Dunkel')),
+                    items: [
+                      DropdownMenuItem(value: 'system', child: Text(l10n.settingsThemeSystem)),
+                      DropdownMenuItem(value: 'light', child: Text(l10n.settingsThemeLight)),
+                      DropdownMenuItem(value: 'dark', child: Text(l10n.settingsThemeDark)),
                     ],
                     onChanged: (value) {
                       if (value != null)
@@ -53,16 +54,40 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.landscape_outlined),
-                  title: const Text('Umgebung im Glas'),
-                  subtitle: const Text(
-                    'Wähle einen Cleanup-Ort als Hintergrund.',
+                  leading: const Icon(Icons.language_rounded),
+                  title: Text(l10n.settingsLanguage),
+                  trailing: DropdownButton<String>(
+                    value: settings.locale ?? Localizations.localeOf(context).languageCode,
+                    underline: const SizedBox.shrink(),
+                    items: [
+                      DropdownMenuItem(value: 'en', child: Text(l10n.settingsLanguageEn)),
+                      DropdownMenuItem(value: 'de', child: Text(l10n.settingsLanguageDe)),
+                      DropdownMenuItem(value: 'fr', child: Text(l10n.settingsLanguageFr)),
+                      DropdownMenuItem(value: 'it', child: Text(l10n.settingsLanguageIt)),
+                    ],
+                    onChanged: (value) {
+                      if (value != null)
+                        _update(
+                          ref,
+                          settings,
+                          AppPreferencesCompanion(
+                            id: const Value(1),
+                            locale: Value(value),
+                          ),
+                        );
+                    },
                   ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.landscape_outlined),
+                  title: Text(l10n.settingsContainerStyle),
+                  subtitle: Text(l10n.settingsContainerStyleSubtitle),
                   trailing: DropdownButton<String>(
                     value: settings.containerStyle,
                     underline: const SizedBox.shrink(),
                     items: [
-                      for (final entry in containerStyleLabels.entries)
+                      for (final entry in containerStyleLabels(context).entries)
                         DropdownMenuItem(
                           value: entry.key,
                           child: Text(entry.value),
@@ -83,10 +108,8 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 SwitchListTile(
                   secondary: const Icon(Icons.auto_awesome_rounded),
-                  title: const Text('Visuelle Effekte'),
-                  subtitle: const Text(
-                    'Szenen-Atmosphäre, Glasglitzer und Zigi-Partikel.',
-                  ),
+                  title: Text(l10n.settingsVisualEffects),
+                  subtitle: Text(l10n.settingsVisualEffectsSubtitle),
                   value: settings.environmentEffectsEnabled,
                   onChanged: (value) => _update(
                     ref,
@@ -99,7 +122,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 SwitchListTile(
                   secondary: const Icon(Icons.motion_photos_off_rounded),
-                  title: const Text('Reduzierte Bewegung'),
+                  title: Text(l10n.settingsReducedMotion),
                   value: settings.reducedMotion,
                   onChanged: (value) => _update(
                     ref,
@@ -114,12 +137,12 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text('FEEDBACK', style: Theme.of(context).textTheme.labelLarge),
+          Text(l10n.settingsCategoryFeedback, style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 8),
           Card(
             child: SwitchListTile(
               secondary: const Icon(Icons.touch_app_rounded),
-              title: const Text('Haptik'),
+              title: Text(l10n.settingsHaptics),
               value: settings.hapticsEnabled,
               onChanged: (value) => _update(
                 ref,
@@ -133,7 +156,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'BENACHRICHTIGUNGEN',
+            l10n.settingsCategoryNotifications,
             style: Theme.of(context).textTheme.labelLarge,
           ),
           const SizedBox(height: 8),
@@ -142,18 +165,16 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 ListTile(
                   leading: const Icon(Icons.timer_outlined),
-                  title: const Text('Session-Limit'),
-                  subtitle: const Text(
-                    'Offene Sessions werden danach sicher abgeschlossen.',
-                  ),
+                  title: Text(l10n.settingsSessionLimit),
+                  subtitle: Text(l10n.settingsSessionLimitSubtitle),
                   trailing: DropdownButton<int>(
                     value: engagement?.timeoutMinutes ?? 120,
                     underline: const SizedBox.shrink(),
-                    items: const [
-                      DropdownMenuItem(value: 30, child: Text('30 Min.')),
-                      DropdownMenuItem(value: 60, child: Text('1 Stunde')),
-                      DropdownMenuItem(value: 120, child: Text('2 Stunden')),
-                      DropdownMenuItem(value: 240, child: Text('4 Stunden')),
+                    items: [
+                      DropdownMenuItem(value: 30, child: Text(l10n.settingsMinutes(30))),
+                      DropdownMenuItem(value: 60, child: Text(l10n.settingsHour)),
+                      DropdownMenuItem(value: 120, child: Text(l10n.settingsHours(2))),
+                      DropdownMenuItem(value: 240, child: Text(l10n.settingsHours(4))),
                     ],
                     onChanged: (value) async {
                       if (value == null) return;
@@ -166,10 +187,8 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 SwitchListTile(
                   secondary: const Icon(Icons.notifications_none_rounded),
-                  title: const Text('Sanfte Cleanup-Erinnerungen'),
-                  subtitle: const Text(
-                    'Optional: wöchentlich, bei längerer Pause monatlich.',
-                  ),
+                  title: Text(l10n.settingsReminders),
+                  subtitle: Text(l10n.settingsRemindersSubtitle),
                   value: engagement?.remindersEnabled ?? false,
                   onChanged: (value) async {
                     final reminders = ref.read(reminderCoordinatorProvider);
@@ -177,10 +196,8 @@ class SettingsScreen extends ConsumerWidget {
                     if (!value) await reminders.disable();
                     if (!enabled && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Benachrichtigungen wurden nicht erlaubt.',
-                          ),
+                        SnackBar(
+                          content: Text(l10n.settingsNotificationsDenied),
                         ),
                       );
                     }
@@ -191,15 +208,15 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text('DATEN', style: Theme.of(context).textTheme.labelLarge),
+          Text(l10n.settingsCategoryData, style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 8),
           Card(
             child: Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.cloud_sync_outlined),
-                  title: const Text('Datensynchronisierung'),
-                  subtitle: Text(_syncSubtitle(sync)),
+                  title: Text(l10n.settingsSyncTitle),
+                  subtitle: Text(_syncSubtitle(context, sync)),
                   trailing: sync?.isSyncing == true
                       ? const SizedBox(
                           width: 20,
@@ -214,8 +231,8 @@ class SettingsScreen extends ConsumerWidget {
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.photo_library_outlined),
-                  title: const Text('Private Cloud-Fotos'),
-                  subtitle: const Text('Deine gesicherten Session-Fotos'),
+                  title: Text(l10n.settingsCloudPhotos),
+                  subtitle: Text(l10n.settingsCloudPhotosSubtitle),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/cloud-photos'),
                 ),
@@ -227,12 +244,13 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  String _syncSubtitle(SyncStatus? status) {
+  String _syncSubtitle(BuildContext context, SyncStatus? status) {
+    final l10n = AppLocalizations.of(context)!;
     if (status == null || !status.isSignedIn) {
-      return 'Melde dich an, um deine Daten zu sichern.';
+      return l10n.settingsSyncSignIn;
     }
-    if (status.isSyncing) return 'Wird synchronisiert ...';
-    if (status.lastSyncedAt == null) return 'Noch nicht synchronisiert';
-    return 'Zuletzt synchronisiert: ${DateFormat('d. MMM, HH:mm', 'de_CH').format(status.lastSyncedAt!)}';
+    if (status.isSyncing) return l10n.settingsSyncing;
+    if (status.lastSyncedAt == null) return l10n.settingsSyncNever;
+    return l10n.settingsSyncLast(DateFormat('d. MMM, HH:mm', Localizations.localeOf(context).toString()).format(status.lastSyncedAt!));
   }
 }

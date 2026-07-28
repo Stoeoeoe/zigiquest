@@ -3,7 +3,7 @@ part of '../../zigi_pile.dart';
 class ForestEnvironment implements Environment {
   const ForestEnvironment();
   @override
-  String get label => 'Waldweg';
+  String label(BuildContext context) => AppLocalizations.of(context)!.vessel_forest_label;
   @override
   String get sceneAsset => 'assets/scenes/forest.png';
   @override

@@ -28,12 +28,12 @@ class ProfileService {
     final safe = displayName.trim();
     if (safe.length < 3 || safe.length > 24) {
       throw const FormatException(
-        'Bitte wähle einen Namen mit 3 bis 24 Zeichen.',
+        'Display name must be between 3 and 24 characters.',
       );
     }
     if (!RegExp(r"^[A-Za-z0-9 _.'-]+$").hasMatch(safe)) {
       throw const FormatException(
-        'Der Name enthält nicht unterstützte Zeichen.',
+        'Display name contains unsupported characters.',
       );
     }
     final client = _client;
