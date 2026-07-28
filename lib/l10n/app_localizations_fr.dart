@@ -989,4 +989,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get quest_weekly_3_title => 'Objectif hebdomadaire : 3 sessions';
+
+  @override
+  String get sessionInactivityTitle => 'Vous collectez encore ?';
+
+  @override
+  String get sessionInactivityBody =>
+      'Votre nettoyage est inactif depuis deux heures. Voulez-vous le terminer maintenant ?';
+
+  @override
+  String get sessionInactivityContinue => 'Continuer la collecte';
+
+  @override
+  String get sessionInactivityEnd => 'Terminer la session';
+
+  @override
+  String get notificationSessionCheckTitle => 'Vous collectez encore ?';
+
+  @override
+  String get notificationSessionCheckBody =>
+      'Votre nettoyage est encore ouvert. Touchez ici pour le reprendre.';
 }

@@ -29,6 +29,7 @@ import '../core/services/progression.dart';
 import '../core/services/session_photo_service.dart';
 import '../l10n/app_localizations.dart';
 import 'discover_content.dart';
+import 'cleanup_route_map.dart';
 import 'visualization/zigi_pile.dart';
 
 part 'screen_state.dart';

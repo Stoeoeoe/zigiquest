@@ -36,6 +36,22 @@ class HistoryScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
+          Text(l10n.historyRounds, style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 8),
+          if (sessions.isEmpty)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(22),
+                child: Text(l10n.historyRoundsEmpty),
+              ),
+            )
+          else
+            for (final session in sessions)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _SessionHistoryTile(session: session),
+              ),
+          const SizedBox(height: 16),
           Text(l10n.historyDiary, style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 8),
           if (ordered.isEmpty)
@@ -66,23 +82,6 @@ class HistoryScreen extends ConsumerWidget {
                   onTap: () => _edit(context, ref, row),
                 ),
               ),
-            ),
-          const SizedBox(height: 16),
-          Text(l10n.historyRounds, style: Theme.of(context).textTheme.labelLarge),
-          const SizedBox(height: 8),
-          if (sessions.isEmpty)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(22),
-                child: Text(
-                  l10n.historyRoundsEmpty,
-                ),
-              ),
-            ),
-          for (final session in sessions)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _SessionHistoryTile(session: session),
             ),
         ],
       ),

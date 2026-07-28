@@ -164,7 +164,11 @@ class SyncService {
           count: Value((row['count'] as num).toInt()),
           durationSeconds: Value((row['duration_seconds'] as num?)?.toInt()),
           distanceMeters: Value((row['distance_meters'] as num?)?.toDouble()),
-          locationMode: Value(row['location_mode'] as String),
+          locationMode: Value(
+              (row['location_mode'] as String) == 'point'
+                  ? 'route'
+                  : row['location_mode'] as String,
+            ),
           approximateLatitude: Value(
             (row['approximate_latitude'] as num?)?.toDouble(),
           ),

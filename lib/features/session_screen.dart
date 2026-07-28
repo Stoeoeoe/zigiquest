@@ -251,7 +251,12 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
     }
     _snapshot = await _location?.stop();
     if (!mounted) return;
-    setState(() => _stage = _SessionStage.finishing);
+    final photo = await _askForCompletionPhoto();
+    if (!mounted) return;
+    setState(() {
+      _after = photo;
+      _stage = _SessionStage.finishing;
+    });
   }
 
   Future<void> _addCompletionPhoto() async {
@@ -435,11 +440,6 @@ class _TrackingChoice extends StatelessWidget {
                     label: Text(l10n.sessionNoLocation),
                   ),
                   const SizedBox(height: 10),
-                  OutlinedButton.icon(
-                    onPressed: () => onChoose('point'),
-                    icon: const Icon(Icons.my_location_rounded),
-                    label: Text(l10n.sessionLocationPoint),
-                  ),
                   const SizedBox(height: 10),
                   OutlinedButton.icon(
                     onPressed: () => onChoose('route'),
@@ -505,14 +505,10 @@ class _ActiveSession extends StatelessWidget {
                       Tooltip(
                         message: tracking == 'none'
                             ? l10n.sessionTrackingStatusNone
-                            : tracking == 'point'
-                            ? l10n.sessionTrackingStatusPoint
                             : l10n.sessionTrackingStatusRoute,
                         child: Icon(
                           tracking == 'none'
                               ? Icons.location_off_rounded
-                              : tracking == 'point'
-                              ? Icons.my_location_rounded
                               : Icons.route_rounded,
                           color: colors.onSurfaceVariant,
                         ),
@@ -665,13 +661,13 @@ class _FinishSession extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
+          child: ListView(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(22),
-                  child: Column(
+                  child: ListView(
                     children: [
                       Text(
                         '$count',
@@ -742,7 +738,7 @@ class _FinishSession extends StatelessWidget {
                   ),
                 ),
               ],
-              const Spacer(),
+              const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: onSave,
                 icon: const Icon(Icons.save_rounded),

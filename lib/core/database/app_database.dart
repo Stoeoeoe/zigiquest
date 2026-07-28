@@ -125,7 +125,7 @@ class AppDatabase extends _$AppDatabase {
     }),
   );
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (migrator, from, to) async {
@@ -142,6 +142,9 @@ class AppDatabase extends _$AppDatabase {
         await migrator.addColumn(appPreferences, appPreferences.locale);
       }
     },
+  );
+  Future<void> normalizeLegacyLocationModes() => customStatement(
+    "UPDATE cleanup_sessions SET location_mode = 'route' WHERE location_mode = 'point'",
   );
   Future<int> countFor(String day) async =>
       (await (select(

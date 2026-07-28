@@ -1817,6 +1817,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weekly goal: 3 sessions'**
   String get quest_weekly_3_title;
+
+  /// No description provided for @sessionInactivityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Still collecting?'**
+  String get sessionInactivityTitle;
+
+  /// No description provided for @sessionInactivityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cleanup has been inactive for two hours. Would you like to finish it now?'**
+  String get sessionInactivityBody;
+
+  /// No description provided for @sessionInactivityContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep collecting'**
+  String get sessionInactivityContinue;
+
+  /// No description provided for @sessionInactivityEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'End run'**
+  String get sessionInactivityEnd;
+
+  /// No description provided for @notificationSessionCheckTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Still collecting?'**
+  String get notificationSessionCheckTitle;
+
+  /// No description provided for @notificationSessionCheckBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cleanup is still open. Tap to continue it.'**
+  String get notificationSessionCheckBody;
 }
 
 class _AppLocalizationsDelegate

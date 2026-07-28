@@ -96,7 +96,9 @@ class ActiveCleanupSession {
         startedAt: startedAt,
         expiresAt: expiresAt,
         lastInteractionAt: lastInteractionAt,
-        tracking: value['tracking'] as String? ?? 'none',
+        tracking: (value['tracking'] as String? ?? 'none') == 'point'
+            ? 'route'
+            : value['tracking'] as String? ?? 'none',
         count: (value['count'] as num?)?.toInt() ?? 0,
       );
     } catch (_) {

@@ -41,6 +41,7 @@ class _BootstrapAppState extends State<_BootstrapApp> {
     await initializeSupabase();
 
     final database = _database = AppDatabase.open();
+    await database.normalizeLegacyLocationModes();
     final active = await ActiveSessionStore().load();
     if (active != null && active.isExpired) {
       await SessionPersistence(
