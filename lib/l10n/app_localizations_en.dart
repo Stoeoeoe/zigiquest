@@ -40,11 +40,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get todayCleanupDescription =>
-      'For intentional rounds with time, an optional location and photo.';
+      'For intentional rounds with time, location and photo.';
 
   @override
   String todayCountSemantics(int count) {
-    return '$count cigarette butts collected today';
+    return '$count butts collected today';
   }
 
   @override
@@ -381,7 +381,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsVisualEffectsSubtitle =>
-      'Scene atmosphere, glass glitter and zigi particles';
+      'Scene atmosphere, glass glitter and butt particles';
 
   @override
   String get settingsReducedMotion => 'Reduced motion';
@@ -469,7 +469,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get historySessionMetricZigis => 'Zigis collected';
+  String get historySessionMetricZigis => 'Butts collected';
 
   @override
   String get historySessionMetricDuration => 'Duration';
@@ -529,7 +529,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEditNameTooltip => 'Change name';
 
   @override
-  String get profileMetricZigis => 'Zigis';
+  String get profileMetricZigis => 'Butts';
 
   @override
   String get profileMetricStreak => 'Streak';
@@ -574,13 +574,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionActiveTitle => 'CLEANUP RUNNING';
 
   @override
-  String get sessionActiveAddSemantic => 'Tap vessel to add a zigi';
+  String get sessionActiveAddSemantic => 'Tap vessel to add a butt';
 
   @override
   String get sessionJarFull => 'Jar full! A new empty jar is ready.';
 
   @override
-  String get sessionFinishingMetricZigis => 'Zigis collected';
+  String get sessionFinishingMetricZigis => 'Butts collected';
 
   @override
   String get sessionFinishingMetricDuration => 'Duration';
@@ -608,7 +608,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String sessionSavedSummary(int count, String duration) {
-    return '$count zigis in $duration';
+    return '$count butts in $duration';
   }
 
   @override
@@ -624,8 +624,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'zigis were',
-      one: 'zigi was',
+      other: 'butts were',
+      one: 'butt was',
     );
     return '$count $_temp0 added to your today-jar.';
   }
@@ -942,22 +942,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vessel_parking_label => 'Parking Lot';
 
   @override
-  String get vessel_add_tooltip => 'Add one zigi';
+  String get vessel_add_tooltip => 'Add one butt';
 
   @override
-  String get vessel_remove_tooltip => 'Remove one zigi';
+  String get vessel_remove_tooltip => 'Remove one butt';
 
   @override
-  String get quest_daily_10_title => 'Collect 10 zigis today';
+  String get quest_daily_10_title => 'Collect 10 butts today';
 
   @override
-  String get quest_daily_25_title => 'Collect 25 zigis today';
+  String get quest_daily_25_title => 'Collect 25 butts today';
 
   @override
   String get quest_session_1_title => 'Complete a cleanup session';
 
   @override
-  String get quest_weekly_75_title => 'Weekly goal: 75 zigis';
+  String get quest_weekly_75_title => 'Weekly goal: 75 butts';
 
   @override
   String get quest_weekly_3_title => 'Weekly goal: 3 sessions';
@@ -981,4 +981,94 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notificationSessionCheckBody =>
       'Your cleanup is still open. Tap to continue it.';
+
+  @override
+  String get communityTabFriends => 'Friends';
+
+  @override
+  String get communityTabActions => 'Actions';
+
+  @override
+  String get communityTabImpact => 'Impact';
+
+  @override
+  String get communityFriendsTitle => 'Your circle';
+
+  @override
+  String get communityFriendsBody =>
+      'Private, friendly motivation. No public ranking.';
+
+  @override
+  String get communityInviteFriends => 'Invite friends';
+
+  @override
+  String get communityTogetherWeek => 'Together this week';
+
+  @override
+  String get communityNoFriends =>
+      'No friends yet. Share your handle to keep each other motivated.';
+
+  @override
+  String get communityActionNow => 'Current action';
+
+  @override
+  String get communityActionWaterTitle => 'Summer by the water';
+
+  @override
+  String get communityActionWaterBody =>
+      'A cleanup by a lake, river, or fountain can become your personal mini-mission.';
+
+  @override
+  String get communityActionFiveTitle => 'Five-minute reset';
+
+  @override
+  String get communityActionFiveBody =>
+      'A small cleanup at a bench, stop, or parking lot is a strong start.';
+
+  @override
+  String get communityImpactTitle => 'Impact, not competition';
+
+  @override
+  String get communityImpactSolo =>
+      'Your cleanups make places visibly cleaner, one zigi at a time.';
+
+  @override
+  String communityImpactCircle(int count) {
+    return 'Your friend circle collected $count zigis this week.';
+  }
+
+  @override
+  String get communityImpactPrivacy =>
+      'Photos and routes stay private unless you consciously share a run.';
+
+  @override
+  String get communityGoalPreparing => 'A shared action is being prepared.';
+
+  @override
+  String get communityGoalLabelNew => 'SHARED ACTION';
+
+  @override
+  String get friendsHandleTitle => 'Your friend handle';
+
+  @override
+  String get friendsHandlePrivacy =>
+      'You are not publicly listed. Share it only with people you want to add.';
+
+  @override
+  String get friendsAddTitle => 'Add a friend';
+
+  @override
+  String get friendsSearchHint => 'Enter handle';
+
+  @override
+  String get friendsSearch => 'Search';
+
+  @override
+  String get friendsAdded => 'Added';
+
+  @override
+  String get friendsShare => 'Invite a friend';
+
+  @override
+  String get friendsSignIn => 'Sign in to add friends.';
 }

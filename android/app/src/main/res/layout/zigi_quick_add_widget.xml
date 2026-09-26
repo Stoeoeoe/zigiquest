@@ -1,0 +1,13 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="14dp"
+    android:background="@drawable/widget_background">
+    <TextView android:id="@+id/widget_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#F4FFF9" android:textStyle="bold" android:textSize="16sp" />
+    <TextView android:id="@+id/widget_count" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#72DDB1" android:textStyle="bold" android:textSize="34sp" />
+    <TextView android:id="@+id/widget_target" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#C9D7D0" android:textSize="12sp" />
+    <Button android:id="@+id/widget_add" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/widget_add" android:textStyle="bold" />
+</LinearLayout>

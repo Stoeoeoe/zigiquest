@@ -104,6 +104,12 @@ class ProfileScreen extends ConsumerWidget {
                   onTap: () => context.push('/achievements'),
                 ),
                 ListTile(
+                  leading: const Icon(Icons.people_alt_outlined),
+                  title: const Text('Freund:innen'),
+                  subtitle: const Text('Einladen, hinzufügen und gemeinsam vergleichen'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/friends'),
+                ),                ListTile(
                   leading: const Icon(Icons.groups_outlined),
                   title: Text(l10n.profileCommunity),
                   subtitle: Text(l10n.profileCommunitySubtitle),

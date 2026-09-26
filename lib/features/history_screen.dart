@@ -168,6 +168,7 @@ Future<void> _showSessionDetails(
   context: context,
   isScrollControlled: true,
   showDragHandle: true,
+  useRootNavigator: true,
   builder: (_) => _SessionDetailsSheet(session: session),
 );
 
@@ -193,9 +194,20 @@ class _SessionDetailsSheet extends ConsumerWidget {
             return ListView(
               padding: const EdgeInsets.fromLTRB(22, 4, 22, 28),
               children: [
-                Text(
-                  l10n.sessionFinishTitle, // Reusing existing key
-                  style: Theme.of(context).textTheme.headlineSmall,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l10n.sessionFinishTitle,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -243,6 +255,14 @@ class _SessionDetailsSheet extends ConsumerWidget {
                 ),
                 const SizedBox(height: 18),
                 _TrackingSummary(mode: session.locationMode),
+                if (session.locationMode == 'route') ...[
+                  const SizedBox(height: 12),
+                  CleanupRouteMap(
+                    routeJson: session.routeJson,
+                    approximateLatitude: session.approximateLatitude,
+                    approximateLongitude: session.approximateLongitude,
+                  ),
+                ],
                 const SizedBox(height: 20),
                 Text(l10n.historyPhotos, style: Theme.of(context).textTheme.labelLarge),
                 const SizedBox(height: 8),

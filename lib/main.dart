@@ -10,9 +10,14 @@ import 'core/services/background_sync.dart';
 import 'core/services/active_session_store.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/session_persistence.dart';
+import 'core/services/zigi_home_widget_service.dart';
+import 'package:home_widget/home_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await HomeWidget.registerInteractivityCallback(
+    zigiHomeWidgetInteractivityCallback,
+  );
   runApp(const _BootstrapApp());
 }
 
@@ -50,6 +55,7 @@ class _BootstrapAppState extends State<_BootstrapApp> {
       await ActiveSessionStore().clear();
       await NotificationService.instance.showSessionExpired();
     }
+    await ZigiHomeWidgetService.refresh(database);
   }
 
   @override

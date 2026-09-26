@@ -1,0 +1,9 @@
+<resources>
+    <string name="widget_label">ZigiQuest</string>
+    <string name="widget_wide_label">ZigiQuest – Schnellzähler</string>
+    <string name="widget_cleanup">CLEANUP</string>
+    <string name="widget_today">HEUTE</string>
+    <string name="widget_cleanup_target">Zigis in deiner Runde</string>
+    <string name="widget_today_target">Zigis heute</string>
+    <string name="widget_add">+ ZIGI</string>
+</resources>

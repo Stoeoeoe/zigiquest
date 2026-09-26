@@ -57,6 +57,7 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
           ref.read(databaseProvider),
         ).finalizeActive(active, endedAt: active.expiresAt);
         await ref.read(activeSessionStoreProvider).clear();
+        await ZigiHomeWidgetService.refresh(ref.read(databaseProvider));
         ref.invalidate(activeSessionProvider);
         if (mounted) {
           setState(() {
@@ -122,6 +123,7 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
         .read(activeSessionStoreProvider)
         .create(tracking: _location == null ? 'none' : tracking);
     ref.invalidate(activeSessionProvider);
+    unawaited(ZigiHomeWidgetService.refresh(ref.read(databaseProvider)));
     unawaited(ref.read(reminderCoordinatorProvider).refresh());
     if (!mounted) return;
     setState(() {
@@ -157,7 +159,7 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
       builder: (context) => AlertDialog(
         icon: const Icon(Icons.timer_outlined),
         title: const Text('Noch am Sammeln?'),
-        content: const Text('Dein Cleanup war zwei Stunden lang inaktiv. Möchtest du ihn jetzt abschliessen?'),
+        content: const Text('Dein Cleanup war zwei Stunden lang inaktiv. MÃƒÆ’Ã‚Â¶chtest du ihn jetzt abschliessen?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -183,11 +185,9 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
     final candidate = _count + delta;
     final next = candidate < 0 ? 0 : candidate;
     setState(() => _count = next);
-    final active = _active;
-    if (active != null) {
-      _active = active.copyWith(count: next);
-      unawaited(ref.read(activeSessionStoreProvider).save(_active!));
-      ref.invalidate(activeSessionProvider);
+    if (_active != null) {
+      _recordInteraction(count: next);
+      unawaited(ZigiHomeWidgetService.refresh(ref.read(databaseProvider)));
     }
     if (delta > 0 && next > 0 && next % _zigisPerJar == 0 && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -355,7 +355,8 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
           );
     });
     await ref.read(activeSessionStoreProvider).clear();
-    ref.invalidate(activeSessionProvider);
+        await ZigiHomeWidgetService.refresh(ref.read(databaseProvider));
+        ref.invalidate(activeSessionProvider);
     unawaited(ref.read(reminderCoordinatorProvider).cleanupCompleted());
     unawaited(ref.read(syncCoordinatorProvider).flush());
     final sessionCount = (await db.select(db.cleanupSessions).get())
@@ -390,6 +391,9 @@ class _LiveSessionScreenState extends ConsumerState<LiveSessionScreen>
         count: _count,
         elapsed: _elapsed,
         photo: _after,
+        routeJson: _snapshot?.routeJson,
+        approximateLatitude: _snapshot?.approximateLatitude,
+        approximateLongitude: _snapshot?.approximateLongitude,
         onChange: _changeCount,
         onAddPhoto: _addCompletionPhoto,
         onSave: _save,
@@ -639,6 +643,9 @@ class _FinishSession extends StatelessWidget {
     required this.count,
     required this.elapsed,
     required this.photo,
+    required this.routeJson,
+    required this.approximateLatitude,
+    required this.approximateLongitude,
     required this.onChange,
     required this.onAddPhoto,
     required this.onSave,
@@ -647,32 +654,31 @@ class _FinishSession extends StatelessWidget {
   final int count;
   final Duration elapsed;
   final SessionPhotoDraft? photo;
+  final String? routeJson;
+  final double? approximateLatitude, approximateLongitude;
   final ValueChanged<int> onChange;
   final Future<void> Function() onAddPhoto;
   final VoidCallback onSave;
 
-  bool get hasPhoto => photo != null;
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final hasPhoto = photo != null;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.sessionFinishTitle)),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-          child: ListView(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(22),
-                  child: ListView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        '$count',
-                        style: Theme.of(context).textTheme.displayLarge,
-                      ),
+                      Text(count.toString(), style: Theme.of(context).textTheme.displayLarge),
                       Text(l10n.sessionFinishingMetricZigis),
                       const SizedBox(height: 12),
                       Text(_duration(elapsed)),
@@ -700,43 +706,29 @@ class _FinishSession extends StatelessWidget {
                   ),
                 ),
               ),
+              if (routeJson != null || approximateLatitude != null) ...[
+                const SizedBox(height: 14),
+                CleanupRouteMap(
+                  routeJson: routeJson,
+                  approximateLatitude: approximateLatitude,
+                  approximateLongitude: approximateLongitude,
+                ),
+              ],
               const SizedBox(height: 14),
               OutlinedButton.icon(
-                onPressed: () => onAddPhoto(),
-                icon: Icon(
-                  hasPhoto
-                      ? Icons.photo_camera_back_outlined
-                      : Icons.camera_alt_outlined,
-                ),
-                label: Text(
-                  hasPhoto
-                      ? l10n.sessionFinishingPhotoChange
-                      : l10n.sessionFinishingPhotoAdd,
-                ),
+                onPressed: onAddPhoto,
+                icon: Icon(hasPhoto ? Icons.photo_camera_back_outlined : Icons.camera_alt_outlined),
+                label: Text(hasPhoto ? l10n.sessionFinishingPhotoChange : l10n.sessionFinishingPhotoAdd),
               ),
               const SizedBox(height: 6),
               Text(
-                hasPhoto
-                    ? l10n.sessionFinishingPhotoReady
-                    : l10n.sessionFinishingPhotoNone,
+                hasPhoto ? l10n.sessionFinishingPhotoReady : l10n.sessionFinishingPhotoNone,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               if (photo != null) ...[
-                const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.file(
-                    photo!.processed.file,
-                    height: 148,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => SizedBox(
-                      height: 96,
-                      child: Center(child: Text(l10n.sessionFinishingPreviewError)),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 10),
+                _CompletionPhotoPreview(file: photo!.processed.file),
               ],
               const SizedBox(height: 24),
               FilledButton.icon(
@@ -752,6 +744,40 @@ class _FinishSession extends StatelessWidget {
   }
 }
 
+class _CompletionPhotoPreview extends StatelessWidget {
+  const _CompletionPhotoPreview({required this.file});
+  final File file;
+
+  @override
+  Widget build(BuildContext context) => Align(
+    alignment: Alignment.center,
+    child: InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => showDialog<void>(
+        context: context,
+        builder: (context) => Dialog.fullscreen(
+          child: Stack(
+            children: [
+              Center(child: InteractiveViewer(child: Image.file(file))),
+              Positioned(
+                top: 16,
+                right: 16,
+                child: IconButton.filledTonal(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close_rounded),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.file(file, height: 64, width: 96, fit: BoxFit.cover),
+      ),
+    ),
+  );
+}
 class _SavedSession extends StatelessWidget {
   const _SavedSession({
     required this.count,

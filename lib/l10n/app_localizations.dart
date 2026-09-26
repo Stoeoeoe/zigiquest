@@ -165,13 +165,13 @@ abstract class AppLocalizations {
   /// No description provided for @todayCleanupDescription.
   ///
   /// In en, this message translates to:
-  /// **'For intentional rounds with time, an optional location and photo.'**
+  /// **'For intentional rounds with time, location and photo.'**
   String get todayCleanupDescription;
 
   /// No description provided for @todayCountSemantics.
   ///
   /// In en, this message translates to:
-  /// **'{count} cigarette butts collected today'**
+  /// **'{count} butts collected today'**
   String todayCountSemantics(int count);
 
   /// No description provided for @todayPileLabel.
@@ -789,7 +789,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsVisualEffectsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Scene atmosphere, glass glitter and zigi particles'**
+  /// **'Scene atmosphere, glass glitter and butt particles'**
   String get settingsVisualEffectsSubtitle;
 
   /// No description provided for @settingsReducedMotion.
@@ -933,7 +933,7 @@ abstract class AppLocalizations {
   /// No description provided for @historySessionMetricZigis.
   ///
   /// In en, this message translates to:
-  /// **'Zigis collected'**
+  /// **'Butts collected'**
   String get historySessionMetricZigis;
 
   /// No description provided for @historySessionMetricDuration.
@@ -1047,7 +1047,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileMetricZigis.
   ///
   /// In en, this message translates to:
-  /// **'Zigis'**
+  /// **'Butts'**
   String get profileMetricZigis;
 
   /// No description provided for @profileMetricStreak.
@@ -1137,7 +1137,7 @@ abstract class AppLocalizations {
   /// No description provided for @sessionActiveAddSemantic.
   ///
   /// In en, this message translates to:
-  /// **'Tap vessel to add a zigi'**
+  /// **'Tap vessel to add a butt'**
   String get sessionActiveAddSemantic;
 
   /// No description provided for @sessionJarFull.
@@ -1149,7 +1149,7 @@ abstract class AppLocalizations {
   /// No description provided for @sessionFinishingMetricZigis.
   ///
   /// In en, this message translates to:
-  /// **'Zigis collected'**
+  /// **'Butts collected'**
   String get sessionFinishingMetricZigis;
 
   /// No description provided for @sessionFinishingMetricDuration.
@@ -1203,7 +1203,7 @@ abstract class AppLocalizations {
   /// No description provided for @sessionSavedSummary.
   ///
   /// In en, this message translates to:
-  /// **'{count} zigis in {duration}'**
+  /// **'{count} butts in {duration}'**
   String sessionSavedSummary(int count, String duration);
 
   /// No description provided for @sessionSavedXp.
@@ -1221,7 +1221,7 @@ abstract class AppLocalizations {
   /// No description provided for @sessionSavedInventoryAdd.
   ///
   /// In en, this message translates to:
-  /// **'{count} {count, plural, =1{zigi was} other{zigis were}} added to your today-jar.'**
+  /// **'{count} {count, plural, =1{butt was} other{butts were}} added to your today-jar.'**
   String sessionSavedInventoryAdd(int count);
 
   /// No description provided for @sessionSavedInventoryNone.
@@ -1779,25 +1779,25 @@ abstract class AppLocalizations {
   /// No description provided for @vessel_add_tooltip.
   ///
   /// In en, this message translates to:
-  /// **'Add one zigi'**
+  /// **'Add one butt'**
   String get vessel_add_tooltip;
 
   /// No description provided for @vessel_remove_tooltip.
   ///
   /// In en, this message translates to:
-  /// **'Remove one zigi'**
+  /// **'Remove one butt'**
   String get vessel_remove_tooltip;
 
   /// No description provided for @quest_daily_10_title.
   ///
   /// In en, this message translates to:
-  /// **'Collect 10 zigis today'**
+  /// **'Collect 10 butts today'**
   String get quest_daily_10_title;
 
   /// No description provided for @quest_daily_25_title.
   ///
   /// In en, this message translates to:
-  /// **'Collect 25 zigis today'**
+  /// **'Collect 25 butts today'**
   String get quest_daily_25_title;
 
   /// No description provided for @quest_session_1_title.
@@ -1809,7 +1809,7 @@ abstract class AppLocalizations {
   /// No description provided for @quest_weekly_75_title.
   ///
   /// In en, this message translates to:
-  /// **'Weekly goal: 75 zigis'**
+  /// **'Weekly goal: 75 butts'**
   String get quest_weekly_75_title;
 
   /// No description provided for @quest_weekly_3_title.
@@ -1853,6 +1853,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your cleanup is still open. Tap to continue it.'**
   String get notificationSessionCheckBody;
+
+  /// No description provided for @communityTabFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get communityTabFriends;
+
+  /// No description provided for @communityTabActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get communityTabActions;
+
+  /// No description provided for @communityTabImpact.
+  ///
+  /// In en, this message translates to:
+  /// **'Impact'**
+  String get communityTabImpact;
+
+  /// No description provided for @communityFriendsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your circle'**
+  String get communityFriendsTitle;
+
+  /// No description provided for @communityFriendsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Private, friendly motivation. No public ranking.'**
+  String get communityFriendsBody;
+
+  /// No description provided for @communityInviteFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends'**
+  String get communityInviteFriends;
+
+  /// No description provided for @communityTogetherWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Together this week'**
+  String get communityTogetherWeek;
+
+  /// No description provided for @communityNoFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends yet. Share your handle to keep each other motivated.'**
+  String get communityNoFriends;
+
+  /// No description provided for @communityActionNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Current action'**
+  String get communityActionNow;
+
+  /// No description provided for @communityActionWaterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Summer by the water'**
+  String get communityActionWaterTitle;
+
+  /// No description provided for @communityActionWaterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A cleanup by a lake, river, or fountain can become your personal mini-mission.'**
+  String get communityActionWaterBody;
+
+  /// No description provided for @communityActionFiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Five-minute reset'**
+  String get communityActionFiveTitle;
+
+  /// No description provided for @communityActionFiveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A small cleanup at a bench, stop, or parking lot is a strong start.'**
+  String get communityActionFiveBody;
+
+  /// No description provided for @communityImpactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Impact, not competition'**
+  String get communityImpactTitle;
+
+  /// No description provided for @communityImpactSolo.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cleanups make places visibly cleaner, one zigi at a time.'**
+  String get communityImpactSolo;
+
+  /// No description provided for @communityImpactCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your friend circle collected {count} zigis this week.'**
+  String communityImpactCircle(int count);
+
+  /// No description provided for @communityImpactPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos and routes stay private unless you consciously share a run.'**
+  String get communityImpactPrivacy;
+
+  /// No description provided for @communityGoalPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'A shared action is being prepared.'**
+  String get communityGoalPreparing;
+
+  /// No description provided for @communityGoalLabelNew.
+  ///
+  /// In en, this message translates to:
+  /// **'SHARED ACTION'**
+  String get communityGoalLabelNew;
+
+  /// No description provided for @friendsHandleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your friend handle'**
+  String get friendsHandleTitle;
+
+  /// No description provided for @friendsHandlePrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not publicly listed. Share it only with people you want to add.'**
+  String get friendsHandlePrivacy;
+
+  /// No description provided for @friendsAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a friend'**
+  String get friendsAddTitle;
+
+  /// No description provided for @friendsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter handle'**
+  String get friendsSearchHint;
+
+  /// No description provided for @friendsSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get friendsSearch;
+
+  /// No description provided for @friendsAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added'**
+  String get friendsAdded;
+
+  /// No description provided for @friendsShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a friend'**
+  String get friendsShare;
+
+  /// No description provided for @friendsSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to add friends.'**
+  String get friendsSignIn;
 }
 
 class _AppLocalizationsDelegate

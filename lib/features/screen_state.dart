@@ -15,7 +15,10 @@ final sessionsProvider = StreamProvider<List<CleanupSession>>(
 final repositoryProvider = Provider<CollectionRepository>(
   (ref) => CollectionRepository(
     ref.watch(databaseProvider),
-    onLocalWrite: () => ref.read(syncCoordinatorProvider).flush(),
+    onLocalWrite: () async {
+      await ZigiHomeWidgetService.refresh(ref.read(databaseProvider));
+      await ref.read(syncCoordinatorProvider).flush();
+    },
   ),
 );
 

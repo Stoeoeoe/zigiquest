@@ -19,6 +19,7 @@ import '../core/services/engagement_preferences.dart';
 import '../core/services/notification_service.dart';
 import '../core/services/rating_service.dart';
 import '../core/services/session_persistence.dart';
+import '../core/services/zigi_home_widget_service.dart';
 import '../core/services/sync_coordinator.dart';
 import '../core/services/sync_status.dart';
 import '../core/services/auth_service.dart';

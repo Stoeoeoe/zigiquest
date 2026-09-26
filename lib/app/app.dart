@@ -8,6 +8,7 @@ import '../features/auth_gate.dart';
 import '../features/achievements_screen.dart';
 import '../features/community_screen.dart';
 import '../features/discover_screen.dart';
+import '../features/friends_screen.dart';
 import '../features/remote_photos_screen.dart';
 import '../features/screens.dart';
 import '../l10n/app_localizations.dart';
@@ -56,6 +57,7 @@ final router = GoRouter(
     GoRoute(path: '/profile', builder: (_, _) => const ProfileScreen()),
     GoRoute(path: '/discover', builder: (_, _) => const DiscoverScreen()),
     GoRoute(path: '/community', builder: (_, _) => const CommunityScreen()),
+    GoRoute(path: '/friends', builder: (_, _) => const FriendsScreen()),
     GoRoute(
       path: '/achievements',
       builder: (_, _) => const AchievementsScreen(),

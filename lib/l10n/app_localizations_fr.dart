@@ -1009,4 +1009,94 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get notificationSessionCheckBody =>
       'Votre nettoyage est encore ouvert. Touchez ici pour le reprendre.';
+
+  @override
+  String get communityTabFriends => 'Friends';
+
+  @override
+  String get communityTabActions => 'Actions';
+
+  @override
+  String get communityTabImpact => 'Impact';
+
+  @override
+  String get communityFriendsTitle => 'Your circle';
+
+  @override
+  String get communityFriendsBody =>
+      'Private, friendly motivation. No public ranking.';
+
+  @override
+  String get communityInviteFriends => 'Invite friends';
+
+  @override
+  String get communityTogetherWeek => 'Together this week';
+
+  @override
+  String get communityNoFriends =>
+      'No friends yet. Share your handle to keep each other motivated.';
+
+  @override
+  String get communityActionNow => 'Current action';
+
+  @override
+  String get communityActionWaterTitle => 'Summer by the water';
+
+  @override
+  String get communityActionWaterBody =>
+      'A cleanup by a lake, river, or fountain can become your personal mini-mission.';
+
+  @override
+  String get communityActionFiveTitle => 'Five-minute reset';
+
+  @override
+  String get communityActionFiveBody =>
+      'A small cleanup at a bench, stop, or parking lot is a strong start.';
+
+  @override
+  String get communityImpactTitle => 'Impact, not competition';
+
+  @override
+  String get communityImpactSolo =>
+      'Your cleanups make places visibly cleaner, one zigi at a time.';
+
+  @override
+  String communityImpactCircle(int count) {
+    return 'Your friend circle collected $count zigis this week.';
+  }
+
+  @override
+  String get communityImpactPrivacy =>
+      'Photos and routes stay private unless you consciously share a run.';
+
+  @override
+  String get communityGoalPreparing => 'A shared action is being prepared.';
+
+  @override
+  String get communityGoalLabelNew => 'SHARED ACTION';
+
+  @override
+  String get friendsHandleTitle => 'Your friend handle';
+
+  @override
+  String get friendsHandlePrivacy =>
+      'You are not publicly listed. Share it only with people you want to add.';
+
+  @override
+  String get friendsAddTitle => 'Add a friend';
+
+  @override
+  String get friendsSearchHint => 'Enter handle';
+
+  @override
+  String get friendsSearch => 'Search';
+
+  @override
+  String get friendsAdded => 'Added';
+
+  @override
+  String get friendsShare => 'Invite a friend';
+
+  @override
+  String get friendsSignIn => 'Sign in to add friends.';
 }

@@ -93,7 +93,7 @@ class CleanupRouteMap extends StatelessWidget {
               ],
             ),
             const SimpleAttributionWidget(
-              source: Text('© OpenStreetMap contributors'),
+              source: Text('OpenStreetMap contributors'),
             ),
           ],
         ),

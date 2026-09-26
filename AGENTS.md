@@ -10,3 +10,5 @@ Steps:
 After changes that affect generated code, such as Drift database definitions or localization ARB files, run:
 
 `dart run build_runner build`
+
+All user-facing text must use `AppLocalizations`; never hardcode user-facing text in Dart files. Add keys to every `/lib/l10n/app_*.arb` file, then regenerate generated code with `dart run build_runner build`.

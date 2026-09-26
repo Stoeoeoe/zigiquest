@@ -1004,4 +1004,95 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get notificationSessionCheckBody =>
       'Dein Cleanup ist noch offen. Tippe hier, um ihn fortzusetzen.';
+
+  @override
+  String get communityTabFriends => 'Freunde';
+
+  @override
+  String get communityTabActions => 'Aktionen';
+
+  @override
+  String get communityTabImpact => 'Wirkung';
+
+  @override
+  String get communityFriendsTitle => 'Dein Kreis';
+
+  @override
+  String get communityFriendsBody =>
+      'Private, freundliche Motivation. Keine oeffentliche Rangliste.';
+
+  @override
+  String get communityInviteFriends => 'Freund:innen einladen';
+
+  @override
+  String get communityTogetherWeek => 'Diese Woche zusammen';
+
+  @override
+  String get communityNoFriends =>
+      'Noch keine Freund:innen. Teile deinen Namen, um gemeinsam dranzubleiben.';
+
+  @override
+  String get communityActionNow => 'Aktuelle Aktion';
+
+  @override
+  String get communityActionWaterTitle => 'Sommer am Wasser';
+
+  @override
+  String get communityActionWaterBody =>
+      'Eine Cleanup-Runde am See, Fluss oder Brunnen kann deine persoenliche Mini-Mission werden.';
+
+  @override
+  String get communityActionFiveTitle => 'Fuenf-Minuten-Reset';
+
+  @override
+  String get communityActionFiveBody =>
+      'Ein kleiner Cleanup an einer Bank, Haltestelle oder auf dem Parkplatz ist ein starker Anfang.';
+
+  @override
+  String get communityImpactTitle => 'Wirkung, nicht Wettbewerb';
+
+  @override
+  String get communityImpactSolo =>
+      'Deine Cleanups machen Orte sichtbar sauberer, Zigi fuer Zigi.';
+
+  @override
+  String communityImpactCircle(int count) {
+    return 'Dein Freundeskreis hat diese Woche $count Zigis gesammelt.';
+  }
+
+  @override
+  String get communityImpactPrivacy =>
+      'Fotos und Routen bleiben privat, bis du eine Runde bewusst teilst.';
+
+  @override
+  String get communityGoalPreparing =>
+      'Eine gemeinsame Aktion wird gerade vorbereitet.';
+
+  @override
+  String get communityGoalLabelNew => 'GEMEINSAME AKTION';
+
+  @override
+  String get friendsHandleTitle => 'Dein Freundesname';
+
+  @override
+  String get friendsHandlePrivacy =>
+      'Nicht oeffentlich gelistet. Teile ihn nur mit Menschen, die du hinzufuegen moechtest.';
+
+  @override
+  String get friendsAddTitle => 'Freund:in hinzufuegen';
+
+  @override
+  String get friendsSearchHint => 'Name eingeben';
+
+  @override
+  String get friendsSearch => 'Suchen';
+
+  @override
+  String get friendsAdded => 'Hinzugefuegt';
+
+  @override
+  String get friendsShare => 'Freund:in einladen';
+
+  @override
+  String get friendsSignIn => 'Melde dich an, um Freund:innen hinzuzufuegen.';
 }
